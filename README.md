@@ -50,7 +50,7 @@ Here are the configuration attributes:
 The default templates of LaTeX documents are in the `~/.guiteliq/templates` directory.
 To create your own template, say `note`, create a direcory `~/.guiteliq/templates/note` and put all boilerplate files inside.
 
-There are several convensions:
+There are several conventions:
 - The main `.tex` file should be called `main.tex`.
 - Inside `main.tex`, there should be an (empty) command `\title{}`.
 - All included files should have an extension `.inc.tex`.
