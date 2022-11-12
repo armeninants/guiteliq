@@ -71,11 +71,8 @@ getWidgetHorizontal = txt . mconcat . fmap go
 
 type Event = ()
 
-data HelpChoice = HelpClose
-
 data ResourceName
-  = Help
-  | ItemsList
+  = ItemsList
   | Search
   | NewItem Text
   deriving (Eq, Ord, Show)
@@ -86,7 +83,7 @@ instance BrickResource ResourceName where
 data BrickState conf itemModel newItemAttrs = BrickState
   { _config :: conf,
     _focusRing :: F.FocusRing ResourceName,
-    _help :: Maybe (D.Dialog HelpChoice),
+    -- _help :: Maybe (D.Dialog HelpChoice),
     _itemsList :: L.List ResourceName itemModel,
     _search :: E.Editor Text ResourceName,
     _allItems :: Vector itemModel,
@@ -112,7 +109,7 @@ initBrickState = do
     BrickState
       { _config = conf,
         _focusRing = itemsListFocus,
-        _help = Nothing,
+        -- _help = Nothing,
         _itemsList = L.list ItemsList l 1,
         _search = E.editor Search Nothing "",
         _allItems = l,
@@ -165,8 +162,6 @@ drawUI ::
   BrickState conf itemModel newItemAttrs ->
   [Widget ResourceName]
 drawUI s = case (currentFocus, s ^. newItem) of
-  (Just Help, _) ->
-    [helpScreen @conf (s ^. help), mainScreen]
   (Just ItemsList, _) -> [mainScreen]
   (Just (NewItem item), Just nd) | item `elem` getAttrsNames (attrsDescVector @conf) -> [drawNewItem s nd, mainScreen]
   _ -> []
@@ -192,7 +187,6 @@ drawUI s = case (currentFocus, s ^. newItem) of
       vLimit 1 $
         hBox
           [ docNavWidget s,
-            str "  F1:Help",
             getWidgetHorizontal (itemActions @conf),
             getWidgetHorizontal (globalActions @conf),
             newItemWidget
@@ -233,10 +227,10 @@ docNavWidget ::
   BrickState conf itemModel newItemAttrs ->
   Widget ResourceName
 docNavWidget s =
-  str "Item " <+> currentDocument <+> str " of " <+> totalDocuments
+  txt "Item " <+> currentDocument <+> txt " of " <+> totalDocuments <+> txt " "
   where
     currentDocument = case s ^. itemsList . L.listSelectedL of
-      Nothing -> str "-"
+      Nothing -> txt "-"
       Just i -> str (show (i + 1))
 
     totalDocuments = str $ show $ Vec.length $ s ^. itemsList . L.listElementsL
@@ -266,8 +260,6 @@ handleEvent ::
 handleEvent s (VtyEvent e) = case (F.focusGetCurrent (s ^. focusRing), e) of
   (_, V.EvKey (V.KChar 'c') [V.MCtrl]) -> halt s
   (r, V.EvKey V.KEsc []) | r /= Just ItemsList -> backToMain s
-  (Just ItemsList, V.EvKey (V.KFun 1) []) -> openHelp s
-  (Just Help, V.EvKey V.KEnter []) -> backToMain s
   (Just ItemsList, _) -> handleItemsListEvent s e
   (Just (NewItem item), _) | item `elem` getAttrsNames (attrsDescVector @conf) -> case s ^. newItem of
     Just nd -> handleNewItemScreenEvent s nd e
@@ -280,16 +272,10 @@ cycleFocus ::
   AppEventM conf itemModel newItemAttrs
 cycleFocus s = continue $ s & focusRing %~ F.focusNext
 
-openHelp ::
-  BrickState conf itemModel newItemAttrs ->
-  AppEventM conf itemModel newItemAttrs
-openHelp s =
-  continue $ s & focusRing .~ F.focusRing [Help] & help ?~ helpDialog
-
 backToMain ::
   BrickState conf itemModel newItemAttrs ->
   AppEventM conf itemModel newItemAttrs
-backToMain s = continue $ s & focusRing .~ itemsListFocus & help .~ Nothing
+backToMain s = continue $ s & focusRing .~ itemsListFocus
 
 handleItemsListEvent ::
   forall conf itemModel newItemAttrs.
@@ -382,43 +368,6 @@ beginNewDoc s =
               & focusRing .~ F.focusRing (NewItem <$> getAttrsNames (attrsDescVector @conf))
               & newItem ?~ nd
       handleNewItemScreenEvent newState nd (V.EvKey V.KDown [])
-
--- ------------------------------------------
--- Help
--- ------------------------------------------
-
-helpDialog :: D.Dialog HelpChoice
-helpDialog = D.dialog (Just " Help ") (Just (0, choices)) 75
-  where
-    choices = [("Cool", HelpClose)]
-
-helpScreen ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  Maybe (D.Dialog HelpChoice) ->
-  Widget ResourceName
-helpScreen (Just d) =
-  withBorderStyle BS.unicodeBold $
-    D.renderDialog d $
-      C.hCenter $
-        padAll 1 $
-          vBox $
-            map
-              txt
-              [ "Welcome to GUITELIQ!",
-                "====================",
-                " ",
-                "[Enter] - open the " <> itemName @conf <> ".",
-                " ",
-                "[Esc] or [q] - quit from main screen.",
-                "[Ctrl-c]     - quit from any screen.",
-                "[Ctrl-t]     - open templates.",
-                "[Ctrl-n]     - create a new " <> itemName @conf <> ".",
-                "[F1]         - this help screen.",
-                " ",
-                "enjoy!"
-              ]
-helpScreen _ = str ""
 
 -- --------------------------------------
 -- Helpers on the State

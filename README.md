@@ -1,6 +1,6 @@
 # Guitéliq
 
-Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` and `LaTeX` files on your own machine, using your preferred editors and viewers.
+Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` and `LaTeX` files, using your preferred editors and viewers.
 
 Written in Haskell 😎.
 
