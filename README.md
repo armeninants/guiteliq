@@ -8,7 +8,7 @@ Written in Haskell 😎.
 
 <img src="docs/assets/writings.gif">
 
-- Lists all `.tex` files (except `.inc.tex`) from your *Writings* directory (see [Configuration](Configuration)) and its subdirectories.
+- Lists all `.tex` files (except `.inc.tex`) from your *Writings* directory (see [Configuration](#configuration)) and its subdirectories.
 - Fetches the titles of `.tex` documents.
 - Recently modified documents appear higher on the list.
 
@@ -16,7 +16,7 @@ Written in Haskell 😎.
 
 <img src="docs/assets/readings.gif">
 
-- Lists all `.pdf` and `.djvu` files from your *Readings* directory (see [Configuration](Configuration)) and its subdirectories.
+- Lists all `.pdf` and `.djvu` files from your *Readings* directory (see [Configuration](#configuration)) and its subdirectories.
 
 ## Installation
 
