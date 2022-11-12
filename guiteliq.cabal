@@ -1,0 +1,293 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.35.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           guiteliq
+version:        0.1.0
+description:    Please see the README on Github at <https://github.com/armeninants/guiteliq#readme>
+homepage:       https://github.com/armeninants/guiteliq#readme
+bug-reports:    https://github.com/armeninants/guiteliq/issues
+author:         Armen Inants
+maintainer:     armen@inants.com
+copyright:      2022 Armen Inants
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/armeninants/guiteliq
+
+library
+  exposed-modules:
+      App.Config
+      Interface.Attribute
+      Interface.BrickAttribute
+      Interface.DOM
+      Interface.ListInterface
+      Readings
+      Readings.Core
+      Readings.Logger
+      Readings.Model
+      Readings.Options
+      Readings.Settings
+      Readings.Types
+      UI.ListTUI
+      Utils.Brick
+      Utils.LaTeX
+      Utils.Shell
+      Utils.Text
+      Writings
+      Writings.Core
+      Writings.Logger
+      Writings.Model
+      Writings.Options
+      Writings.Settings
+      Writings.Types
+  other-modules:
+      Paths_guiteliq
+  hs-source-dirs:
+      src
+  default-extensions:
+      BangPatterns
+      DataKinds
+      DeriveAnyClass
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+      MultiWayIf
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      Glob
+    , HaTeX
+    , JuicyPixels
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , brick
+    , bytestring
+    , conduit
+    , config-ini
+    , directory
+    , directory-tree
+    , envparse
+    , extra
+    , file-embed
+    , filepath
+    , first-class-families
+    , ghc
+    , http-client
+    , http-client-tls
+    , lens
+    , load-env
+    , microlens
+    , microlens-mtl
+    , microlens-th
+    , mtl
+    , optparse-simple
+    , pretty-show
+    , process
+    , process-extras
+    , protolude
+    , random
+    , rio
+    , scientific
+    , shelly
+    , streaming-commons
+    , text
+    , time
+    , unix
+    , uri-encode
+    , utf8-string
+    , vector
+    , vector-sized
+    , vty
+  default-language: Haskell2010
+
+executable ai-readings
+  main-is: Main.hs
+  other-modules:
+      Paths_guiteliq
+  hs-source-dirs:
+      app/readings
+  default-extensions:
+      BangPatterns
+      DataKinds
+      DeriveAnyClass
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+      MultiWayIf
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -static -optP-Wno-nonportable-include-path
+  build-depends:
+      Glob
+    , HaTeX
+    , JuicyPixels
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , brick
+    , bytestring
+    , conduit
+    , config-ini
+    , directory
+    , directory-tree
+    , envparse
+    , extra
+    , file-embed
+    , filepath
+    , first-class-families
+    , ghc
+    , guiteliq
+    , http-client
+    , http-client-tls
+    , lens
+    , load-env
+    , microlens
+    , microlens-mtl
+    , microlens-th
+    , mtl
+    , optparse-simple
+    , pretty-show
+    , process
+    , process-extras
+    , protolude
+    , random
+    , rio
+    , scientific
+    , shelly
+    , streaming-commons
+    , text
+    , time
+    , unix
+    , uri-encode
+    , utf8-string
+    , vector
+    , vector-sized
+    , vty
+  default-language: Haskell2010
+
+executable ai-writings
+  main-is: Main.hs
+  other-modules:
+      Paths_guiteliq
+  hs-source-dirs:
+      app/writings
+  default-extensions:
+      BangPatterns
+      DataKinds
+      DeriveAnyClass
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      GADTs
+      LambdaCase
+      MultiParamTypeClasses
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      OverloadedStrings
+      RankNTypes
+      RecordWildCards
+      ScopedTypeVariables
+      StandaloneDeriving
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+      MultiWayIf
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -static -optP-Wno-nonportable-include-path
+  build-depends:
+      Glob
+    , HaTeX
+    , JuicyPixels
+    , aeson
+    , aeson-pretty
+    , base >=4.7 && <5
+    , brick
+    , bytestring
+    , conduit
+    , config-ini
+    , directory
+    , directory-tree
+    , envparse
+    , extra
+    , file-embed
+    , filepath
+    , first-class-families
+    , ghc
+    , guiteliq
+    , http-client
+    , http-client-tls
+    , lens
+    , load-env
+    , microlens
+    , microlens-mtl
+    , microlens-th
+    , mtl
+    , optparse-simple
+    , pretty-show
+    , process
+    , process-extras
+    , protolude
+    , random
+    , rio
+    , scientific
+    , shelly
+    , streaming-commons
+    , text
+    , time
+    , unix
+    , uri-encode
+    , utf8-string
+    , vector
+    , vector-sized
+    , vty
+  default-language: Haskell2010

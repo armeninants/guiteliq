@@ -1,0 +1,46 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# VS Code stuff:
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# Misc
+.DS_Store
+
+# Data
+data/
+!src/**/Data/
+
+# haskell stuff
+.ghc.environment.*
+dist
+dist-*
+cabal-dev
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+*.prof
+*.hp
+*.eventlog
+.cabal-sandbox/
+cabal.sandbox.config
+cabal.config
+cabal.project.local
+.HTF/
+.stack-work/
+stack.yaml.lock
+
+*Armen*

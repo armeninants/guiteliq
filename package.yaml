@@ -1,0 +1,155 @@
+name:                guiteliq
+version:             0.1.0
+github:              armeninants/guiteliq
+license:             MIT
+author:              Armen Inants
+maintainer:          armen@inants.com
+copyright:           2022 Armen Inants
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on Github at <https://github.com/armeninants/guiteliq#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- optparse-simple
+- rio
+- brick
+- vty
+- vector
+- mtl
+- lens
+- microlens
+- microlens-mtl
+- conduit
+- unix
+- HaTeX
+- Glob
+- time
+- process
+- filepath
+- aeson
+- aeson-pretty
+- protolude
+- http-client
+- http-client-tls
+- uri-encode
+- text
+- utf8-string
+- scientific
+- envparse
+- load-env
+- directory
+- ghc
+- microlens-th
+- config-ini
+- random
+- file-embed
+- bytestring
+- shelly
+- pretty-show
+- directory-tree
+- streaming-commons
+- JuicyPixels
+- Glob
+- vector-sized
+- extra
+- process-extras
+- first-class-families
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  ai-writings:
+    main:                Main.hs
+    source-dirs:         app/writings
+    dependencies:
+    - guiteliq
+    - optparse-simple
+
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -static
+    - -optP-Wno-nonportable-include-path
+
+  ai-readings:
+    main:                Main.hs
+    source-dirs:         app/readings
+    dependencies:
+    - guiteliq
+    - optparse-simple
+
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -static
+    - -optP-Wno-nonportable-include-path
+
+# tests:
+#   guiteliq-test:
+#     main:                Spec.hs
+#     source-dirs:         test
+#     dependencies:
+#     - guiteliq
+#     - hspec
+#     - hspec-checkers
+#     - QuickCheck
+#     - checkers
+#     # - generic-arbitrary
+#     # - quickcheck-instances
+#     # - ghc-prim
+
+#     ghc-options:
+#     - -threaded
+#     - -rtsopts
+#     - -with-rtsopts=-N
+
+default-extensions:
+  - BangPatterns
+  - DataKinds
+  - DeriveAnyClass
+  - DeriveFoldable
+  - DeriveFunctor
+  - DeriveGeneric
+  - DeriveLift
+  - DeriveTraversable
+  - DerivingStrategies
+  - FlexibleContexts
+  - FlexibleInstances
+  - GADTs
+  - LambdaCase
+  - MultiParamTypeClasses
+  - NoImplicitPrelude
+  - NoMonomorphismRestriction
+  - OverloadedStrings
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TupleSections
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+  - MultiWayIf
