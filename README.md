@@ -1,5 +1,8 @@
 # Guitéliq
 
+[![armeninants](https://circleci.com/gh/armeninants/guiteliq.svg?style=shield)](https://circleci.com/gh/armeninants/guiteliq)
+
+
 Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` and `LaTeX` files, using your preferred editors and viewers.
 
 Written in Haskell 😎.
