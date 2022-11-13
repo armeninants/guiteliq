@@ -26,8 +26,14 @@ Haskell [stack](https://docs.haskellstack.org/en/stable/) is a prerequisite, ins
 
 Run `stack install` from the project's root directory to compile the project.
 
+If you need one of the two apps only, run one of these commands:
+```bash
+stack install guiteliq:ai-readings
+stack install guiteliq:ai-writings
+```
+
 Et voilà, Guitéliq is up and running!
-The two command-line tools, `ai-writings` and `ai-readings`, are located at `~/.local/bin`.
+`ai-writings` and/or `ai-readings`, are located at `~/.local/bin`.
 
 ## Configuration
 
