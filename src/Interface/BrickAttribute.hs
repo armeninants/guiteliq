@@ -110,7 +110,7 @@ liftInitState ::
     attr ->
     m (AttrState conf res attr)
   ) ->
-  BrickAttrList conf attrs ->
+  AttrList conf attrs ->
   m (BrickAttrStateList conf res attrs)
 liftInitState _ NoAttr = pure NoAttrState
 liftInitState f (attr :> attrs) = liftA2 (::>) ((attr,) <$> f attr) (liftInitState f attrs)
@@ -132,7 +132,7 @@ mapMethod f ((attr ::> attrs)) = f attr : mapMethod f attrs
 
 mapMethod1 ::
   (forall attr. AttributeInit conf attr => (attr -> b)) ->
-  BrickAttrList conf attrs ->
+  AttrList conf attrs ->
   [b]
 mapMethod1 _ NoAttr = []
 mapMethod1 f ((attr :> attrs)) = f attr : mapMethod1 f attrs
@@ -155,7 +155,7 @@ instance (BrickAttribute conf res attr, ApplyFuncToAttrs conf res attrs a) => Ap
 
 initAttrsStates ::
   All (BrickAttribute conf res) attrs =>
-  BrickAttrList conf attrs ->
+  AttrList conf attrs ->
   RIO conf (BrickAttrStateList conf res attrs)
 initAttrsStates = liftInitState f
   where
@@ -191,6 +191,6 @@ renderAttrsWidgets attrStates focusRing =
       ]
 
 getAttrsNames ::
-  BrickAttrList conf attrs ->
+  AttrList conf attrs ->
   [Text]
 getAttrsNames = mapMethod1 attrLabel

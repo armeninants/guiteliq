@@ -28,7 +28,7 @@ module Interface.Attribute
     AttributeInit (..),
     ToFunc (..),
     HeterogenList (..),
-    BrickAttrList (..),
+    AttrList (..),
     All,
   )
 where
@@ -57,8 +57,6 @@ class Attribute attr where
   type AttrValType attr :: Type
   type AttrInitType attr :: Type
   attrLabel :: attr -> Text
-
-  -- attrInitial :: attr -> InSomeMonad (AttrInitType attr)
   attrValid :: attr -> AttrValType attr -> Bool
 
 class Attribute attr => AttributeInit conf attr where
@@ -109,9 +107,9 @@ instance ToFunc (attr ': attrs) res where
 
 -- -----------------------------------------------
 
-data BrickAttrList :: Type -> [Type] -> Type where
-  NoAttr :: BrickAttrList conf '[]
-  (:>) :: AttributeInit conf attr => attr -> BrickAttrList conf attrs -> BrickAttrList conf (attr ': attrs)
+data AttrList :: Type -> [Type] -> Type where
+  NoAttr :: AttrList conf '[]
+  (:>) :: AttributeInit conf attr => attr -> AttrList conf attrs -> AttrList conf (attr ': attrs)
 
 infixr 5 :>
 
@@ -125,7 +123,7 @@ class HeterogenList (a :: [Type] -> Type) where
 
   hEmpty :: a '[]
 
-instance HeterogenList (BrickAttrList conf) where
+instance HeterogenList (AttrList conf) where
   hLength NoAttr = 0
   hLength (_ :> ts) = 1 + hLength ts
   hEmpty = NoAttr

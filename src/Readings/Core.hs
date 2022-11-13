@@ -153,13 +153,10 @@ instance HasListInterface Conf.Config DocMetadata RIF where
     let query = T.toLower $ T.strip query_
      in (T.null query || T.isInfixOf query (T.toLower _docTitle))
 
-  mkEventsChan :: RIO Conf.Config (TChan (AbstractListEvent DocMetadata), ThreadId)
-  mkEventsChan = undefined
-
   initAction :: RIO Conf.Config ()
   initAction = return ()
 
-  attrsDescVector :: BrickAttrList Conf.Config RIF
+  attrsDescVector :: AttrList Conf.Config RIF
   attrsDescVector = hEmpty
 
   getConfig :: IO Conf.Config

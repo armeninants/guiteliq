@@ -68,9 +68,8 @@ getTeXInfo fpath = do
     FPath (Just mm) -> return $ Just mm
     _ -> return Nothing
 
--- | Checks the templates directory.
--- If it doesn't exist, then creates it.
--- Returns a list of template names – the list of subdirectories
+-- | Returns a list of template names –
+-- the list of subdirectories
 -- of the templates directory.
 getTemplateDirs :: RIO Conf.Config [Text]
 getTemplateDirs = do
@@ -149,12 +148,6 @@ openWriting DocMetadata {..} = do
   conf <- ask
   liftIO $ openTeXProject conf _docPath
 
--- | TODO: Watch all file changes
-watchItems :: RIO Config (TChan (AbstractListEvent DocMetadata), ThreadId)
-watchItems = do
-  -- conf <- ask
-  return undefined
-
 -- | Checks the templates directory.
 -- If it doesn't exist, then creates it.
 -- Returns a list of template names – the list of subdirectories
@@ -206,13 +199,10 @@ instance HasListInterface Conf.Config DocMetadata WIF where
     let query = T.toLower $ T.strip query_
      in (T.null query || T.isInfixOf query (T.toLower _docTitle))
 
-  mkEventsChan :: RIO Conf.Config (TChan (AbstractListEvent DocMetadata), ThreadId)
-  mkEventsChan = watchItems
-
   initAction :: RIO Conf.Config ()
   initAction = provisionTemplates
 
-  attrsDescVector :: BrickAttrList Conf.Config WIF
+  attrsDescVector :: AttrList Conf.Config WIF
   attrsDescVector =
     TextAttr
       { tLabel = "title",

@@ -27,14 +27,7 @@ import RIO hiding (Vector)
 
 -- ---------------------------------------------
 
--- | We need this for specifying how to trigger an action
 type KeyBinding = (Key, [Modifier])
-
--- | User Events type for the UI
-data AbstractListEvent a
-  = Insert a
-  | Update a
-  | Delete a
 
 -- ---------------------------------------------
 
@@ -42,15 +35,14 @@ class
   HasListInterface conf itemModel newItemAttrs
     | conf -> itemModel newItemAttrs
   where
+  attrsDescVector :: AttrList conf newItemAttrs
+
   createNewItem :: Func newItemAttrs (RIO conf (Maybe itemModel))
 
   -- | An initiation function
   getItems :: RIO conf (Vec.Vector itemModel)
 
-  -- | A rendering function for items
-  renderL :: itemModel -> Text
-
-  renderR :: itemModel -> Text
+  getConfig :: IO conf
 
   -- | Action that should be run at program initiation
   initAction :: RIO conf ()
@@ -63,15 +55,13 @@ class
 
   newItemCallback :: itemModel -> RIO conf ()
 
+  -- | A rendering function for items
+  renderL :: itemModel -> Text
+
+  renderR :: itemModel -> Text
+
   -- | A filtering function for items:
   matchItem :: Text -> itemModel -> Bool
-
-  -- | A BChan with events, including
-  mkEventsChan :: RIO conf (TChan (AbstractListEvent itemModel), ThreadId)
-
-  attrsDescVector :: BrickAttrList conf newItemAttrs
-
-  getConfig :: IO conf
 
   itemName :: Text
 

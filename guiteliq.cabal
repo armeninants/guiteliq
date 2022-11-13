@@ -36,7 +36,6 @@ library
       Readings.Model
       Readings.Options
       Readings.Settings
-      Readings.Types
       UI.ListTUI
       Utils.Brick
       Utils.LaTeX
@@ -48,7 +47,6 @@ library
       Writings.Model
       Writings.Options
       Writings.Settings
-      Writings.Types
   other-modules:
       Paths_guiteliq
   hs-source-dirs:
