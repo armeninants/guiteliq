@@ -1,8 +1,10 @@
 # Guitéliq
 
-Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` and `LaTeX` files, using your preferred editors and viewers.
+[![armeninants](https://circleci.com/gh/armeninants/guiteliq.svg?style=shield)](https://circleci.com/gh/armeninants/guiteliq)
 
-Written in Haskell 😎.
+![Haskell](https://img.shields.io/badge/Haskell-5e5086?style=for-the-badge&logo=haskell&logoColor=white)
+
+Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` and `LaTeX` files, using your preferred editors and viewers.
 
 ## `ai-writings` - navigate and search your LaTeX docs
 
