@@ -1,4 +1,4 @@
-# Guitéliq
+# Guitéliq – Toolset For Knowledge Work
 
 [![armeninants](https://circleci.com/gh/armeninants/guiteliq.svg?style=shield)](https://circleci.com/gh/armeninants/guiteliq)
 
