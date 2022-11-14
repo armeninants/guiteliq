@@ -1,4 +1,4 @@
-# Guitéliq – Toolset For Knowledge Work
+# Guitéliq – a toolset for knowledge work
 
 [![armeninants](https://circleci.com/gh/armeninants/guiteliq.svg?style=shield)](https://circleci.com/gh/armeninants/guiteliq)
 
