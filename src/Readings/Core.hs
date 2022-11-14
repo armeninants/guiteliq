@@ -3,7 +3,7 @@
 
 {-
 Module      : Readings.Core
-Description : Core of Readings App
+Description : Core of the Readings App
 Copyright   : (c) Armen Inants, 2022
 License     : MIT
 Maintainer  : armen@inants.com
@@ -14,27 +14,16 @@ Core of Readings App
 module Readings.Core where
 
 import App.Config
-  ( Config,
-    configPath,
-    djvuCmd,
-    editorCmd,
-    pdfCmd,
-  )
 import qualified App.Config as Conf
 import Conduit
 import qualified Data.Text as T
 import qualified Data.Vector as Vec
-import GHC.Plugins (mapFst)
 import Graphics.Vty.Input.Events
 import Interface.DOM
 import Interface.ListInterface
 import RIO hiding (on)
-import RIO.ByteString (writeFile)
-import RIO.Directory (createDirectoryIfMissing)
-import RIO.FilePath (takeDirectory, takeFileName, (</>))
 import RIO.List (sortBy)
 import Readings.Model
-import System.Directory (doesDirectoryExist, listDirectory)
 import UI.ListTUI
 import Utils.Shell
 
@@ -56,41 +45,6 @@ getDocsMeta topDir =
 getDocsMetaSorted :: FilePath -> IO (Vector DocMetadata)
 getDocsMetaSorted =
   fmap (Vec.fromList . sortByModif . Vec.toList) <$> getDocsMeta
-
-getTeXInfo :: FilePath -> IO (Maybe DocMetadata)
-getTeXInfo fpath = do
-  pathCat <- classifyPath (Proxy :: Proxy AppDOM) fpath
-  case pathCat of
-    FPath (Just mm) -> return $ Just mm
-    _ -> return Nothing
-
--- | Returns relative names of subdirectories of a given dir
-listSubdirs :: FilePath -> IO [FilePath]
-listSubdirs dir = fmap takeFileName <$> listSubdirsAbs dir
-
--- | Including symlinks
-listSubdirsAbs :: FilePath -> IO [FilePath]
-listSubdirsAbs dir =
-  listDirectory dir >>= filterM doesDirectoryExist . fmap (dir </>)
-
--- | Unrolls the hard-coded templates into the file system.
-writeDirIn :: FilePath -> [(FilePath, ByteString)] -> IO ()
-writeDirIn dir contents =
-  mapM_ (uncurry createAndWriteFile) $ mapFst (dir </>) contents
-
-openPathInDefaultEditor :: Conf.Config -> FilePath -> IO ()
-openPathInDefaultEditor conf path = do
-  let cmdStr = conf ^. editorCmd
-  -- print cmdStr
-  runCommand_ cmdStr [path]
-
--- | The input is a TeX file path
--- openTeXProject :: Conf.Config -> FilePath -> IO ()
--- openTeXProject conf fpath = openPathInDefaultEditor conf $ takeDirectory fpath
-createAndWriteFile :: FilePath -> ByteString -> IO ()
-createAndWriteFile path content = do
-  createDirectoryIfMissing True $ takeDirectory path
-  writeFile path content
 
 -- | Creates a new document, returns the path of the TeX file and whether the project is new
 createNewReading :: RIO Config (Maybe DocMetadata)

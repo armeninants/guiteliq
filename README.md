@@ -6,6 +6,12 @@
 
 Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, and `LaTeX`, `Markdown` writings, using your preferred editors and viewers.
 
+### Assumptions
+
+- You keep all your writings and readings within your home directory (`~`).
+- The writings that you don't want to be listed have an extension prefix `.inc`, i.e. `.inc.tex` or `.inc.md`.
+
+
 ## `ai-writings` - navigate and search your LaTeX docs
 
 <img src="docs/assets/writings.gif">
@@ -24,10 +30,12 @@ Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, 
 
 Haskell [stack](https://docs.haskellstack.org/en/stable/) is a prerequisite, installation instructions can be found [here](https://docs.haskellstack.org/en/stable/).
 
-Run `stack install` from the project's root directory to compile the project.
-
-If you need one of the two apps only, run one of these commands:
+Run one of the commands below from the project's root directory:
 ```bash
+# To compile the whole project:
+stack install
+# Or
+# To compile a single app:
 stack install guiteliq:ai-readings
 stack install guiteliq:ai-writings
 ```
