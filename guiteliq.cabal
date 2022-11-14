@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           guiteliq
-version:        0.1.0
+version:        0.2.0
 description:    Please see the README on Github at <https://github.com/armeninants/guiteliq#readme>
 homepage:       https://github.com/armeninants/guiteliq#readme
 bug-reports:    https://github.com/armeninants/guiteliq/issues
