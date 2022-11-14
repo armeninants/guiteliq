@@ -78,15 +78,15 @@ writeDirIn :: FilePath -> [(FilePath, ByteString)] -> IO ()
 writeDirIn dir contents =
   mapM_ (uncurry createAndWriteFile) $ mapFst (dir </>) contents
 
-openPathInEditor :: Conf.Config -> FilePath -> IO ()
-openPathInEditor conf path = do
+openPathInDefaultEditor :: Conf.Config -> FilePath -> IO ()
+openPathInDefaultEditor conf path = do
   let cmdStr = conf ^. editorCmd
   -- print cmdStr
   runCommand_ cmdStr [path]
 
 -- | The input is a TeX file path
 -- openTeXProject :: Conf.Config -> FilePath -> IO ()
--- openTeXProject conf fpath = openPathInEditor conf $ takeDirectory fpath
+-- openTeXProject conf fpath = openPathInDefaultEditor conf $ takeDirectory fpath
 createAndWriteFile :: FilePath -> ByteString -> IO ()
 createAndWriteFile path content = do
   createDirectoryIfMissing True $ takeDirectory path
@@ -102,7 +102,7 @@ createNewReading = do
 openConfig :: RIO Config ()
 openConfig = do
   conf <- ask
-  view configPath >>= liftIO . openPathInEditor conf
+  view configPath >>= liftIO . openPathInDefaultEditor conf
 
 openReading :: DocMetadata -> RIO Config ()
 openReading DocMetadata {..} = do

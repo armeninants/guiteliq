@@ -22,6 +22,7 @@ import Interface.DOM
 import RIO hiding (on)
 import System.FilePath.Posix (takeExtension)
 import Utils.LaTeX
+import Utils.Markdown
 
 -- ------------------------------------------
 -- Document Organization
@@ -31,7 +32,7 @@ import Utils.LaTeX
 data AppDOM
 
 -- | Supported document type.
-data DocType = LaTeX
+data DocType = LaTeX | Markdown
   deriving (Show, Eq, Ord)
 
 -- | Document metadata.
@@ -54,8 +55,6 @@ data DirMetadata = DirMetadata
 makeLenses ''DocMetadata
 makeLenses ''DirMetadata
 
-type IsSymbolicLink = Bool
-
 instance DocumentOrganizationModel AppDOM where
   type
     DirMeta AppDOM =
@@ -68,26 +67,40 @@ instance DocumentOrganizationModel AppDOM where
   classifyPath Proxy fp = do
     ft <- F.getFileType fp
     case ft of
-      _ | ft `elem` [F.FTFile, F.FTFileSym] -> case takeExtension fp of
-        ".tex" | not (".inc.tex" `isSuffixOf` fp) -> do
-          mtitle <- getTitle fp
-          case mtitle of
-            Nothing -> return $ FPath Nothing
-            Just title -> do
-              modificationTime <- liftIO $ getModificationUTCTime fp
-              return $
-                FPath $
-                  Just $
-                    DocMetadata
-                      { _docTitle = title,
-                        _docModificationTime = modificationTime,
-                        _docPath = fp,
-                        _docType = LaTeX,
-                        _docSymbolic = ft /= F.FTFile
-                      }
-        _ -> return $ FPath Nothing
+      _ | ft `elem` [F.FTFile, F.FTFileSym] ->
+        case takeExtension fp of
+          ".tex"
+            | not (".inc.tex" `isSuffixOf` fp) ->
+                helper getTeXTitle fp ft LaTeX
+          ".md"
+            | not (".inc.md" `isSuffixOf` fp) ->
+                helper getMarkdownTitle fp ft Markdown
+          _ -> return $ FPath Nothing
       _
         | ft `elem` [F.FTDirectory, F.FTDirectorySym] ->
             return $ DPath $ DirMetadata fp (ft /= F.FTDirectory)
       _ -> return OtherPath
   traversalPolicy Proxy _dirCat = True
+
+helper ::
+  (FilePath -> IO (Maybe Text)) ->
+  FilePath ->
+  F.FileType ->
+  DocType ->
+  IO (PathCategory DirMetadata DocMetadata)
+helper titleGetter fp ft doc = do
+  mtitle <- titleGetter fp
+  case mtitle of
+    Nothing -> return $ FPath Nothing
+    Just title -> do
+      modificationTime <- liftIO $ getModificationUTCTime fp
+      return $
+        FPath $
+          Just $
+            DocMetadata
+              { _docTitle = title,
+                _docModificationTime = modificationTime,
+                _docPath = fp,
+                _docType = doc,
+                _docSymbolic = ft /= F.FTFile
+              }

@@ -69,10 +69,11 @@ instance BrickResource res => BrickAttribute conf res (TextAttr conf) where
   getAttrValue _ = mconcat . Brick.getEditContents . unTextState
   initAttrState attr = TextState . Brick.editor (attrResourceMap (Proxy @conf) attr) Nothing
   renderAttrWidget attr state focusRing =
-    Brick.renderEditor
-      (Brick.txt . T.unlines)
-      (Brick.focusGetCurrent focusRing == Just (attrResourceMap (Proxy @conf) attr))
-      (unTextState state)
+    Brick.vLimit 1 $
+      Brick.renderEditor
+        (Brick.txt . T.unlines)
+        (Brick.focusGetCurrent focusRing == Just (attrResourceMap (Proxy @conf) attr))
+        (unTextState state)
   eventHandler _ ev = (TextState <$>) . Brick.handleEditorEvent ev . unTextState
 
 instance BrickResource res => BrickAttribute conf res (MultChoiceAttr conf) where
@@ -80,10 +81,11 @@ instance BrickResource res => BrickAttribute conf res (MultChoiceAttr conf) wher
   getAttrValue _ = Brick.listSelectedElement . unMultChoiceState
   initAttrState attr init = MultChoiceState $ Brick.list (attrResourceMap (Proxy @conf) attr) (Vec.fromList init) 1
   renderAttrWidget attr state focusRing =
-    Brick.renderList
-      (const Brick.txt)
-      (Brick.focusGetCurrent focusRing == Just (attrResourceMap (Proxy @conf) attr))
-      (unMultChoiceState state)
+    Brick.vLimit 10 $
+      Brick.renderList
+        (const Brick.txt)
+        (Brick.focusGetCurrent focusRing == Just (attrResourceMap (Proxy @conf) attr))
+        (unMultChoiceState state)
   eventHandler _ ev = (MultChoiceState <$>) . Brick.handleListEvent ev . unMultChoiceState
 
 -- -----------------------------------------------
@@ -187,7 +189,7 @@ renderAttrsWidgets attrStates focusRing =
     f (attr, state) =
       [ Brick.txt (attrLabel attr),
         Brick.hBorder,
-        Brick.vLimit 1 $ renderAttrWidget attr state focusRing
+        renderAttrWidget attr state focusRing
       ]
 
 getAttrsNames ::

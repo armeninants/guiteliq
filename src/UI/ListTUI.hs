@@ -211,10 +211,10 @@ drawNewItem s editors =
         padLeftRight 2 $
           padTopBottom 1 $
             hLimit 70 $
-              vLimit 20 $
+              vLimit 30 $
                 vBox
                   [ renderAttrsWidgets editors (s ^. focusRing),
-                    str " ",
+                    txt " ",
                     txt $
                       "[Esc]    - cancel.\n"
                         <> "[Tab]    - switch between editor and suggestions.\n"

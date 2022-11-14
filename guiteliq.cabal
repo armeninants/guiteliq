@@ -39,6 +39,8 @@ library
       UI.ListTUI
       Utils.Brick
       Utils.LaTeX
+      Utils.Markdown
+      Utils.Pandoc
       Utils.Shell
       Utils.Text
       Writings
@@ -107,6 +109,7 @@ library
     , microlens-th
     , mtl
     , optparse-simple
+    , pandoc
     , pretty-show
     , process
     , process-extras
@@ -159,7 +162,7 @@ executable ai-readings
       TypeFamilies
       TypeOperators
       MultiWayIf
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -static -optP-Wno-nonportable-include-path
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -static -optP-Wno-nonportable-include-path -O2
   build-depends:
       Glob
     , HaTeX
@@ -189,6 +192,7 @@ executable ai-readings
     , microlens-th
     , mtl
     , optparse-simple
+    , pandoc
     , pretty-show
     , process
     , process-extras
@@ -241,7 +245,7 @@ executable ai-writings
       TypeFamilies
       TypeOperators
       MultiWayIf
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -static -optP-Wno-nonportable-include-path
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -static -optP-Wno-nonportable-include-path -O2
   build-depends:
       Glob
     , HaTeX
@@ -271,6 +275,7 @@ executable ai-writings
     , microlens-th
     , mtl
     , optparse-simple
+    , pandoc
     , pretty-show
     , process
     , process-extras

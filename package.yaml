@@ -65,6 +65,7 @@ dependencies:
 - extra
 - process-extras
 - first-class-families
+- pandoc
 
 ghc-options:
 - -Wall
@@ -92,6 +93,7 @@ executables:
     - -with-rtsopts=-N
     - -static
     - -optP-Wno-nonportable-include-path
+    - -O2
 
   ai-readings:
     main:                Main.hs
@@ -106,6 +108,7 @@ executables:
     - -with-rtsopts=-N
     - -static
     - -optP-Wno-nonportable-include-path
+    - -O2
 
 # tests:
 #   guiteliq-test:

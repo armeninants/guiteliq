@@ -14,12 +14,6 @@ Stability   : experimental
 module Writings.Core where
 
 import App.Config
-  ( Config,
-    configPath,
-    editorCmd,
-    templatesDir,
-    writingsDir,
-  )
 import qualified App.Config as Conf
 import Conduit
 import Data.FileEmbed (embedDir)
@@ -31,15 +25,13 @@ import Interface.DOM
 import Interface.ListInterface
 import RIO hiding (on)
 import RIO.ByteString (writeFile)
-import RIO.Directory (createDirectoryIfMissing)
+import RIO.Directory (createDirectoryIfMissing, doesDirectoryExist, listDirectory)
 import RIO.FilePath (isValid, takeDirectory, takeFileName, (</>))
 import RIO.List (sortBy)
 import RIO.Time (defaultTimeLocale, formatTime)
 import Shelly hiding (path, (</>))
-import System.Directory (doesDirectoryExist, listDirectory)
 import UI.ListTUI
 import Utils.LaTeX
-import Utils.Shell
 import Writings.Model
 
 -- ------------------------------------------
@@ -75,7 +67,7 @@ getTemplateDirs :: RIO Conf.Config [Text]
 getTemplateDirs = do
   c <- ask
   subdirs <- liftIO $ listSubdirs (c ^. templatesDir)
-  return $ T.pack <$> subdirs
+  return $ T.pack <$> "markdown" : subdirs
 
 -- | Returns relative names of subdirectories of a given dir
 listSubdirs :: FilePath -> IO [FilePath]
@@ -95,16 +87,6 @@ writeDirIn :: FilePath -> [(FilePath, ByteString)] -> IO ()
 writeDirIn dir contents =
   mapM_ (uncurry createAndWriteFile) $ mapFst (dir </>) contents
 
-openPathInEditor :: Conf.Config -> FilePath -> IO ()
-openPathInEditor conf path = do
-  let cmdStr = conf ^. editorCmd
-  -- print cmdStr
-  runCommand_ cmdStr [path]
-
--- | The input is a TeX file path
-openTeXProject :: Conf.Config -> FilePath -> IO ()
-openTeXProject conf fpath = openPathInEditor conf $ takeDirectory fpath
-
 createAndWriteFile :: FilePath -> ByteString -> IO ()
 createAndWriteFile path content = do
   createDirectoryIfMissing True $ takeDirectory path
@@ -116,6 +98,10 @@ createNewDocument title name mTemplate = do
   conf <- ask
   -- printf "Creating a project %s from template %s with a title \"%s\"\n" name template title
   case mTemplate of
+    Just (_i, "markdown") -> liftIO $ do
+      let mdFilePath = (conf ^. writingsDir) </> T.unpack name </> (T.unpack name <> ".md")
+      createAndWriteFile mdFilePath $ "# " <> encodeUtf8 title
+      getTeXInfo mdFilePath
     Just (_i, template) -> do
       let tmplDir = (conf ^. templatesDir) </> T.unpack template
           newProjectDir = (conf ^. writingsDir) </> T.unpack name
@@ -127,7 +113,7 @@ createNewDocument title name mTemplate = do
             escaping False $ do
               cp_r tmplDir newProjectDir
               mv (newProjectDir </> "main.tex") texFilePath
-          withLaTeXFile texFilePath $ setTitle title
+          onLaTeXFile texFilePath $ setTitle title
       liftIO $ getTeXInfo texFilePath
     Nothing -> return Nothing
 
@@ -136,17 +122,19 @@ createNewDocument title name mTemplate = do
 openTemplates :: RIO Config ()
 openTemplates = do
   conf <- ask
-  view templatesDir >>= liftIO . openPathInEditor conf
+  view templatesDir >>= liftIO . openPathInDefaultEditor conf
 
 openConfig :: RIO Config ()
 openConfig = do
   conf <- ask
-  view configPath >>= liftIO . openPathInEditor conf
+  view configPath >>= liftIO . openPathInDefaultEditor conf
 
 openWriting :: DocMetadata -> RIO Config ()
 openWriting DocMetadata {..} = do
   conf <- ask
-  liftIO $ openTeXProject conf _docPath
+  liftIO $ case _docType of
+    LaTeX -> openPathInLaTeXEditor conf (takeDirectory _docPath)
+    Markdown -> openPathInMarkdownEditor conf _docPath
 
 -- | Checks the templates directory.
 -- If it doesn't exist, then creates it.

@@ -9,16 +9,7 @@ Stability   : experimental
 {-# LANGUAGE TemplateHaskell #-}
 
 module App.Config
-  ( Config (..),
-    homeDir,
-    readingsDir,
-    writingsDir,
-    templatesDir,
-    configPath,
-    getConfig,
-    editorCmd,
-    pdfCmd,
-    djvuCmd,
+  ( module App.Config,
   )
 where
 
@@ -33,11 +24,14 @@ import System.Directory
     doesFileExist,
     getHomeDirectory,
   )
+import Utils.Shell
 
 data ConfigData = ConfigData
   { _readingsDirD :: FilePath,
     _writingsDirD :: FilePath,
     _editorPrefix :: String,
+    _latexCmdD :: String,
+    _mdCmdD :: String,
     _pdfCmdD :: String,
     _djvuCmdD :: String
   }
@@ -48,6 +42,8 @@ instance ToJSON ConfigData where
       [ "readings.root.directory" .= _readingsDirD,
         "writings.root.directory" .= _writingsDirD,
         "editor.prefix" .= _editorPrefix,
+        "latex.cmd.prefix" .= _latexCmdD,
+        "md.cmd.prefix" .= _mdCmdD,
         "pdf.cmd.prefix" .= _pdfCmdD,
         "djvu.cmd.prefix" .= _djvuCmdD
       ]
@@ -62,6 +58,10 @@ instance FromJSON ConfigData where
       <*> v
       .: "editor.prefix"
       <*> v
+      .: "latex.cmd.prefix"
+      <*> v
+      .: "md.cmd.prefix"
+      <*> v
       .: "pdf.cmd.prefix"
       <*> v
       .: "djvu.cmd.prefix"
@@ -73,6 +73,8 @@ data Config = Config
     _templatesDir :: FilePath,
     _configPath :: FilePath,
     _editorCmd :: String,
+    _latexCmd :: String,
+    _mdCmd :: String,
     _pdfCmd :: String,
     _djvuCmd :: String
   }
@@ -86,6 +88,8 @@ defaultConfigData =
     { _readingsDirD = "Documents/Library",
       _writingsDirD = "Documents/Writings",
       _editorPrefix = "code",
+      _latexCmdD = "code",
+      _mdCmdD = "code",
       _pdfCmdD = "open",
       _djvuCmdD = "open"
     }
@@ -118,6 +122,21 @@ getConfig = liftIO $ do
         _templatesDir = tmplsDir,
         _configPath = confPath,
         _editorCmd = confData ^. editorPrefix,
+        _latexCmd = confData ^. latexCmdD,
+        _mdCmd = confData ^. mdCmdD,
         _pdfCmd = confData ^. pdfCmdD,
         _djvuCmd = confData ^. djvuCmdD
       }
+
+-- -----------------------------------------------
+-- Utils
+-- -----------------------------------------------
+
+openPathInDefaultEditor :: Config -> FilePath -> IO ()
+openPathInDefaultEditor Config {..} path = runCommand_ _editorCmd [path]
+
+openPathInMarkdownEditor :: Config -> FilePath -> IO ()
+openPathInMarkdownEditor Config {..} path = runCommand_ _mdCmd [path]
+
+openPathInLaTeXEditor :: Config -> FilePath -> IO ()
+openPathInLaTeXEditor Config {..} path = runCommand_ _latexCmd [path]

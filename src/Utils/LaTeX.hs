@@ -34,8 +34,8 @@ import Text.LaTeX.Base.Syntax
 instance Plated LaTeX where
   plate = uniplate
 
-getTitle :: FilePath -> IO (Maybe Text)
-getTitle filePath = do
+getTeXTitle :: FilePath -> IO (Maybe Text)
+getTeXTitle filePath = do
   res <- parseLaTeXFile filePath
   case res of
     Left _err -> return Nothing
@@ -53,13 +53,13 @@ getTitleFromLaTeX latex = lookForCommand "title" latex & headMaybe >>= go
     go ((FixArg arg) : _) = Just arg
     go (_ : rest) = go rest
 
-withLaTeXFile :: FilePath -> (LaTeX -> IO LaTeX) -> IO ()
-withLaTeXFile fpath f =
+onLaTeXFile :: FilePath -> (LaTeX -> LaTeX) -> IO ()
+onLaTeXFile fpath f =
   parseLaTeXFile fpath
-    >>= either (const $ return ()) (T.writeFile fpath . render <=< f)
+    >>= either (const $ return ()) (T.writeFile fpath . render . f)
 
-setTitle :: Text -> LaTeX -> IO LaTeX
-setTitle title latex = return $ transform f latex
+setTitle :: Text -> LaTeX -> LaTeX
+setTitle title = transform f
   where
     f (TeXComm "title" _args) = TeXComm "title" [FixArg (TeXRaw title)]
     f x = x

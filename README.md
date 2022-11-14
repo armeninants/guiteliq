@@ -4,13 +4,13 @@
 
 ![Haskell](https://img.shields.io/badge/Haskell-5e5086?style=for-the-badge&logo=haskell&logoColor=white)
 
-Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` and `LaTeX` files, using your preferred editors and viewers.
+Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, and `LaTeX`, `Markdown` writings, using your preferred editors and viewers.
 
 ## `ai-writings` - navigate and search your LaTeX docs
 
 <img src="docs/assets/writings.gif">
 
-- Lists all `.tex` files (except `.inc.tex`) from your *Writings* directory (see [Configuration](#configuration)) and its subdirectories.
+- Lists all `.tex` and `.md` files (except `.inc.tex` and `.inc.md`) from your *Writings* directory (see [Configuration](#configuration)) and its subdirectories.
 - Fetches the titles of `.tex` documents.
 - Recently modified documents appear higher on the list.
 
@@ -40,18 +40,16 @@ Et voilà, Guitéliq is up and running!
 The config file `~/.guiteliq/config.json` will be created upon the first start of either app.
 Here are the configuration attributes:
 
-<dl>
-  <dt><strong>editor.prefix</strong></dt>
-  <dd>Set to use your preferred editor, e.g. <tt>vim</tt>, <tt>emacs</tt>, or other. The default value is <tt>code</tt>.</dd>
-  <dt><strong>writings.root.directory</strong></dt>
-  <dd>The root directory for all your writings (<tt>.tex</tt> documents), relative to the home directory. The default value is <tt>Documents/Writings</tt>, which resolves to <tt>~/Documents/Writings</tt>.</dd>
-  <dt><strong>readings.root.directory</strong></dt>
-  <dd>The root directory for all your readings (<tt>.pdf</tt> and <tt>.djvu</tt> documents), relative to the home directory. The default value is <tt>Documents/Library</tt>.</dd>
-  <dt><strong>djvu.cmd.prefix</strong></dt>
-  <dd>The editor for <tt>.djvu</tt> files.</dd>
-  <dt><strong>pdf.cmd.prefix</strong></dt>
-  <dd>The editor for <tt>.pdf</tt> files.</dd>
-</dl>
+|Attribute|Description|
+|---|---|
+|*writings.root.directory*|The root directory for all your writings (`.tex` documents), relative to the home directory. The default value is `Documents/Writings`, which resolves to `~/Documents/Writings`.|
+|*readings.root.directory*|The root directory for all your readings (`.pdf` and `.djvu` documents), relative to the home directory. The default value is `Documents/Library`.|
+|*md.cmd.prefix*|The command for opening `.md` files.|
+|*latex.cmd.prefix*|The command for opening `.tex` files.|
+|*djvu.cmd.prefix*|The command for opening `.djvu` files.|
+|*pdf.cmd.prefix*|The command for opening `.pdf` files.|
+|*editor.prefix*|The command for opening all other files. Set to use your preferred editor, e.g. `vim`, `emacs`, or other. The default value is `code`.|
+
 
 ## How to customize LaTeX templates
 

@@ -1,5 +1,11 @@
 # Changelog for Guitéliq
 
+## 0.2.0
+
+### Writings
+
+- Added support for Markdown (`.md`) files. All `.md` files in the writings directory are listed, except the `.inc.md` files.
+
 ## 0.1.0
 
 ### Writings
