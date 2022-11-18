@@ -27,6 +27,7 @@ library
   exposed-modules:
       App.Config
       Interface.Attribute
+      Interface.Attribute0
       Interface.BrickAttribute
       Interface.DOM
       Interface.ListInterface
