@@ -133,8 +133,8 @@ openWriting :: DocMetadata -> RIO Config ()
 openWriting DocMetadata {..} = do
   conf <- ask
   liftIO $ case _docType of
-    LaTeX -> openPathInLaTeXEditor conf (takeDirectory _docPath)
-    Markdown -> openPathInMarkdownEditor conf (takeDirectory _docPath)
+    LaTeX -> openLaTeXDocument conf _docPath
+    Markdown -> openMarkdownDocument conf _docPath
 
 -- | Checks the templates directory.
 -- If it doesn't exist, then creates it.

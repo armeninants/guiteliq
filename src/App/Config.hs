@@ -24,6 +24,7 @@ import System.Directory
     doesFileExist,
     getHomeDirectory,
   )
+import System.FilePath (takeDirectory)
 import Utils.Shell
 
 data ConfigData = ConfigData
@@ -135,8 +136,18 @@ getConfig = liftIO $ do
 openPathInDefaultEditor :: Config -> FilePath -> IO ()
 openPathInDefaultEditor Config {..} path = runCommand_ _editorCmd [path]
 
+-- | Deprecated
 openPathInMarkdownEditor :: Config -> FilePath -> IO ()
 openPathInMarkdownEditor Config {..} path = runCommand_ _mdCmd [path]
 
+-- | Deprecated
 openPathInLaTeXEditor :: Config -> FilePath -> IO ()
 openPathInLaTeXEditor Config {..} path = runCommand_ _latexCmd [path]
+
+-- | Open a Markdown document externally.
+openMarkdownDocument :: Config -> FilePath -> IO ()
+openMarkdownDocument Config {..} path = runCommand_ _mdCmd [takeDirectory path, path]
+
+-- | Open a LaTeX document externally.
+openLaTeXDocument :: Config -> FilePath -> IO ()
+openLaTeXDocument Config {..} path = runCommand_ _latexCmd [takeDirectory path, path]
