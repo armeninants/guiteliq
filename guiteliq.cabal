@@ -27,7 +27,6 @@ library
   exposed-modules:
       App.Config
       Interface.Attribute
-      Interface.Attribute0
       Interface.BrickAttribute
       Interface.DOM
       Interface.ListInterface
@@ -88,8 +87,8 @@ library
     , JuicyPixels
     , aeson
     , aeson-pretty
-    , base >=4.7 && <5
-    , brick
+    , base >=4.13 && <5
+    , brick <0.70
     , bytestring
     , conduit
     , config-ini
@@ -170,8 +169,8 @@ executable ai-readings
     , JuicyPixels
     , aeson
     , aeson-pretty
-    , base >=4.7 && <5
-    , brick
+    , base >=4.13 && <5
+    , brick <0.70
     , bytestring
     , conduit
     , config-ini
@@ -253,8 +252,8 @@ executable ai-writings
     , JuicyPixels
     , aeson
     , aeson-pretty
-    , base >=4.7 && <5
-    , brick
+    , base >=4.13 && <5
+    , brick <0.70
     , bytestring
     , conduit
     , config-ini

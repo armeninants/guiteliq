@@ -19,7 +19,6 @@ import Conduit
 import Data.FileEmbed (embedDir)
 import qualified Data.Text as T
 import qualified Data.Vector as Vec
-import GHC.Plugins (mapFst)
 import Graphics.Vty.Input.Events
 import Interface.DOM
 import Interface.ListInterface
@@ -34,6 +33,9 @@ import UI.ListTUI
 import Utils.LaTeX
 import Writings.Model
 
+
+mapFst :: (a->c) -> [(a,b)] -> [(c,b)]
+mapFst f xys = [(f x, y) | (x,y) <- xys]
 -- ------------------------------------------
 -- Actions on Files
 -- ------------------------------------------

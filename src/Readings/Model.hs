@@ -27,7 +27,7 @@ import Control.Lens hiding (cons, view, (^.))
 import qualified Data.Streaming.Filesystem as F
 import qualified Data.Text as T
 import Data.Time (UTCTime)
-import GHC.Utils.Misc (getModificationUTCTime)
+import System.Directory (getModificationTime)
 import Interface.DOM
 import RIO hiding (on)
 import System.FilePath.Posix (takeBaseName, takeExtension)
@@ -83,7 +83,7 @@ instance DocumentOrganizationModel AppDOM where
 helper :: FilePath -> F.FileType -> DocType -> IO (PathCategory DirMetadata DocMetadata)
 helper fp ft doc = do
   let title = takeBaseName fp & T.pack
-  modificationTime <- liftIO $ getModificationUTCTime fp
+  modificationTime <- liftIO $ getModificationTime fp
   return $
     FPath $
       Just $

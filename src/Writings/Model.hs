@@ -17,7 +17,7 @@ import Control.Lens hiding (cons, view, (^.))
 import Data.List (isSuffixOf)
 import qualified Data.Streaming.Filesystem as F
 import Data.Time (UTCTime)
-import GHC.Utils.Misc (getModificationUTCTime)
+import System.Directory (getModificationTime)
 import Interface.DOM
 import RIO hiding (on)
 import System.FilePath.Posix (takeExtension)
@@ -93,7 +93,7 @@ helper titleGetter fp ft doc = do
   case mtitle of
     Nothing -> return $ FPath Nothing
     Just title -> do
-      modificationTime <- liftIO $ getModificationUTCTime fp
+      modificationTime <- liftIO $ getModificationTime fp
       return $
         FPath $
           Just $

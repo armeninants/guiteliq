@@ -11,7 +11,6 @@ module Utils.Pandoc where
 
 import Data.List.Extra
 import qualified Data.Text.IO as T
-import GHC.Data.Maybe (rightToMaybe)
 import RIO hiding (on)
 import Text.Pandoc
 import Text.Pandoc.Shared
@@ -28,3 +27,7 @@ markdownToPandoc :: FilePath -> IO (Maybe Pandoc)
 markdownToPandoc fp = do
   raw <- T.readFile fp
   rightToMaybe <$> runIO (readMarkdown def raw)
+
+rightToMaybe :: Either a b -> Maybe b
+rightToMaybe (Left a) = Nothing
+rightToMaybe (Right b) = Just b
