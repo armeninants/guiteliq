@@ -81,8 +81,8 @@ listSubdirsAbs dir =
   listDirectory dir >>= filterM doesDirectoryExist . fmap (dir </>)
 
 -- | Hard-coded tamplates
-defaultTemplates :: [(FilePath, ByteString)]
-defaultTemplates = $(embedDir "templates")
+-- defaultTemplates :: [(FilePath, ByteString)]
+-- defaultTemplates = $(embedDir "templates")
 
 -- | Unrolls the hard-coded templates into the file system.
 writeDirIn :: FilePath -> [(FilePath, ByteString)] -> IO ()
@@ -142,14 +142,14 @@ openWriting DocMetadata {..} = do
 -- If it doesn't exist, then creates it.
 -- Returns a list of template names – the list of subdirectories
 -- of the templates directory.
-provisionTemplates :: RIO Config ()
-provisionTemplates = do
-  c <- ask
-  let templatesDir' = c ^. templatesDir
-  createDirectoryIfMissing True templatesDir'
-  subdirs <- liftIO $ listSubdirs templatesDir'
-  when (null subdirs) $ do
-    liftIO $ writeDirIn templatesDir' defaultTemplates
+-- provisionTemplates :: RIO Config ()
+-- provisionTemplates = do
+--   c <- ask
+--   let templatesDir' = c ^. templatesDir
+--   createDirectoryIfMissing True templatesDir'
+--   subdirs <- liftIO $ listSubdirs templatesDir'
+--   when (null subdirs) $ do
+--     liftIO $ writeDirIn templatesDir' defaultTemplates
 
 -- | TODO: check whether the new element exists in the vector before adding it
 updateListWithDoc ::
@@ -190,7 +190,7 @@ instance HasListInterface Conf.Config DocMetadata WIF where
      in (T.null query || T.isInfixOf query (T.toLower _docTitle))
 
   initAction :: RIO Conf.Config ()
-  initAction = provisionTemplates
+  initAction = return ()
 
   attrsDescVector :: AttrList Conf.Config WIF
   attrsDescVector =

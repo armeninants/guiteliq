@@ -1,0 +1,10 @@
+cradle:
+  cabal:
+  - component: "lib:guiteliq"
+    path: ./src
+  - component: "guiteliq:exe:ai-readings"
+    path: ./app/readings
+  - component: "guiteliq:exe:ai-writings"
+    path: ./app/writings
+  - component: "guiteliq:test:guiteliq-test"
+    path: ./test

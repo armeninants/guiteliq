@@ -1,7 +1,5 @@
-
 {
   // Automatically created by phoityne-vscode extension.
-
   "version": "2.0.0",
   "presentation": {
     "reveal": "always",
@@ -16,16 +14,16 @@
       },
       "label": "haskell build",
       "type": "shell",
-      //"command": "cabal configure && cabal build"
-      "command": "stack build"
+      "command": "cabal configure && cabal build"
+      // "command": "stack build"
     },
     {
       // F6
       "group": "build",
       "type": "shell",
       "label": "haskell clean & build",
-      //"command": "cabal clean && cabal configure && cabal build"
-      "command": "stack clean && stack build"
+      "command": "cabal clean && cabal configure && cabal build"
+      // "command": "stack clean && stack build"
       //"command": "stack clean ; stack build"  // for powershell
     },
     {
@@ -36,8 +34,8 @@
       },
       "type": "shell",
       "label": "haskell test",
-      //"command": "cabal test"
-      "command": "stack test"
+      "command": "cabal test"
+      // "command": "stack test"
     },
     {
       // F6

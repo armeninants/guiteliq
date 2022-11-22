@@ -29,5 +29,5 @@ markdownToPandoc fp = do
   rightToMaybe <$> runIO (readMarkdown def raw)
 
 rightToMaybe :: Either a b -> Maybe b
-rightToMaybe (Left a) = Nothing
+rightToMaybe (Left _) = Nothing
 rightToMaybe (Right b) = Just b
