@@ -39,6 +39,7 @@ Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, 
 
 ### Compile from the source
 Haskell compiler is a prerequisite, installation instructions are [here](https://www.haskell.org/ghcup/).
+
 To compile and install the executables, run `make install`.
 
 Et voilà, Guitéliq is up and running!
@@ -50,8 +51,8 @@ After downloading binary, make it executable and copy it under convenient locati
 
 ```bash
 chmod +x ai-readings-osx ai-writings-osx
-mv ai-readings-osx ~/.local/bin/ai-readings
-mv ai-writings-osx ~/.local/bin/ai-writings
+mv ai-readings-osx /usr/local/bin/ai-readings
+mv ai-writings-osx /usr/local/bin/ai-writings
 ```
 
 ## Configuration
