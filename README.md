@@ -1,7 +1,9 @@
 # Guitéliq – a toolset for knowledge work
 
 [![GitHub CI](https://github.com/armeninants/guiteliq/workflows/Haskell-CI/badge.svg)](https://github.com/armeninants/guiteliq/actions)
+[![GitHub release](https://img.shields.io/github/release/armeninants/guiteliq.svg)](https://github.com/armeninants/guiteliq/releases/)
 [![stability-experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 
 Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, and `LaTeX`, `Markdown` writings, using your preferred editors and viewers.
