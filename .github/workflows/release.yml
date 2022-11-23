@@ -33,7 +33,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest, macOS-latest]
 
     steps:
       - name: Check out code
@@ -64,9 +64,9 @@ jobs:
           mkdir dist
           cabal install --install-method=copy --overwrite-policy=always --installdir=dist
 
-      - if: matrix.os == 'windows-latest'
-        name: Set extension to .exe on Windows
-        run: echo "EXT=.exe" >> $GITHUB_ENV
+      # - if: matrix.os == 'windows-latest'
+      #   name: Set extension to .exe on Windows
+      #   run: echo "EXT=.exe" >> $GITHUB_ENV
 
       - name: Set writings binary path name
         run: echo "WRITINGS_BINARY_PATH=./dist/ai-writings" >> $GITHUB_ENV
