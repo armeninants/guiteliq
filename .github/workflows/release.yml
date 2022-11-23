@@ -29,14 +29,11 @@ jobs:
 
   build_artifact:
     needs: [create_release]
-    name: ${{ matrix.os }}/GHC ${{ matrix.ghc }}/${{ github.ref }}
+    name: ${{ matrix.os }}/${{ github.ref }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        ghc:
-          - "8.8.4"
-        cabal: ["3.2"]
 
     steps:
       - name: Check out code
@@ -46,8 +43,8 @@ jobs:
         uses: haskell/actions/setup@v2.0.1
         id: setup-haskell-cabal
         with:
-          ghc-version: ${{ matrix.ghc }}
-          cabal-version: ${{ matrix.cabal }}
+          ghc-version: 8.8.4
+          cabal-version: 3.2
 
       - name: Freeze
         run: |
@@ -57,7 +54,7 @@ jobs:
         uses: actions/cache@v3.0.11
         with:
           path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
-          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('cabal.project.freeze') }}
+          key: ${{ runner.os }}-${{ hashFiles('cabal.project.freeze') }}
 
       - name: Build binary
         run: |
@@ -88,7 +85,7 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_path: ${{ env.WRITINGS_BINARY_PATH }}
-          asset_name: ai-writings-${{ runner.os }}-ghc-${{ matrix.ghc }}
+          asset_name: ai-writings-${{ runner.os }}
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset Readings
@@ -99,5 +96,5 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_path: ${{ env.READINGS_BINARY_PATH }}
-          asset_name: ai-readings-${{ runner.os }}-ghc-${{ matrix.ghc }}
+          asset_name: ai-readings-${{ runner.os }}
           asset_content_type: application/octet-stream

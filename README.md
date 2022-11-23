@@ -10,7 +10,7 @@ Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, 
 
 ## Structure
 
-- [`ai-writings` - navigate and search your LaTeX docs](#ai-writings---navigate-and-search-your-latex-docs)
+- [`ai-writings` - navigate and search your LaTeX and Markdown docs](#ai-writings---navigate-and-search-your-latex-and-markdown-docs)
 - [`ai-readings` - single access point for your library](#ai-readings---single-access-point-for-your-library)
 - [Installation](#installation)
   - [Compile from the source](#compile-from-the-source)
@@ -18,7 +18,7 @@ Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, 
 - [Configuration](#configuration)
 - [How to customize LaTeX templates](#how-to-customize-latex-templates)
 
-## `ai-writings` - navigate and search your LaTeX docs
+## `ai-writings` - navigate and search your LaTeX and Markdown docs
 
 <img src="docs/assets/writings.gif">
 
