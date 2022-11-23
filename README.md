@@ -38,20 +38,10 @@ Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, 
 ## Installation
 
 ### Compile from the source
-Haskell [stack](https://docs.haskellstack.org/en/stable/) is a prerequisite, installation instructions can be found [here](https://docs.haskellstack.org/en/stable/).
-
-Run one of the commands below from the project's root directory:
-```bash
-# To compile the whole project:
-stack install
-# Or
-# To compile a single app:
-stack install guiteliq:ai-readings
-stack install guiteliq:ai-writings
-```
+Haskell compiler is a prerequisite, installation instructions are [here](https://www.haskell.org/ghcup/).
+To compile and install the executables, run `make install`.
 
 Et voilà, Guitéliq is up and running!
-`ai-writings` and/or `ai-readings`, are located at `~/.local/bin`.
 
 ### Download a binary release
 You can download binary directly [from GitHub releases](https://github.com/armeninants/guiteliq/releases).
