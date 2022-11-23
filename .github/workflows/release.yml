@@ -42,7 +42,7 @@ jobs:
         os: [ubuntu-latest, macOS-latest]
         ghc:
           - "8.8.4"
-        cabal: ["1.12"]
+        cabal: ["3.2"]
 
     steps:
       - name: Check out code
