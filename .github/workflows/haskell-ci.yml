@@ -1,4 +1,4 @@
-name: CI
+name: Haskell-CI
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
     - uses: actions/setup-haskell@v1
       with:
         ghc-version: '8.8.4'
-        cabal-version: '3.2'
+        cabal-version: '1.12'
 
     - name: Cache
       uses: actions/cache@v3

@@ -1,6 +1,6 @@
 # Guitéliq – a toolset for knowledge work
 
-[![GitHub CI](https://github.com/armeninants/guiteliq/workflows/CI/badge.svg)](https://github.com/armeninants/guiteliq/actions)
+[![GitHub CI](https://github.com/armeninants/guiteliq/workflows/Haskell-CI/badge.svg)](https://github.com/armeninants/guiteliq/actions)
 [![stability-experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 
 <!-- [![armeninants](https://circleci.com/gh/armeninants/guiteliq.svg?style=shield)](https://circleci.com/gh/armeninants/guiteliq) -->
