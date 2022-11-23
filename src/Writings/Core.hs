@@ -136,6 +136,14 @@ updateListWithDoc ::
   Vector DocMetadata -> DocMetadata -> Vector DocMetadata
 updateListWithDoc l newItm = Vec.cons newItm l
 
+-- | Checks the templates directory.
+-- If it doesn't exist, then creates it.
+provisionTemplates :: RIO Config ()
+provisionTemplates = do
+  c <- ask
+  let templatesDir' = c ^. templatesDir
+  createDirectoryIfMissing True templatesDir'
+
 -- ---------------------------------------------
 -- Writings instance of List Interface
 -- ---------------------------------------------
@@ -170,7 +178,7 @@ instance HasListInterface Conf.Config DocMetadata WIF where
      in (T.null query || T.isInfixOf query (T.toLower _docTitle))
 
   initAction :: RIO Conf.Config ()
-  initAction = return ()
+  initAction = provisionTemplates
 
   attrsDescVector :: AttrList Conf.Config WIF
   attrsDescVector =

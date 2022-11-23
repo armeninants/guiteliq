@@ -67,10 +67,10 @@ Here are the configuration attributes:
 | *editor.prefix*           | The command for opening all other files. Set to use your preferred editor, e.g. `vim`, `emacs`, or other. The default value is `code`.                                            |
 
 
-## How to customize LaTeX templates
+## How to add LaTeX templates
 
-The default templates of LaTeX documents are in the `~/.guiteliq/templates` directory.
-To create your own template, say `note`, create a direcory `~/.guiteliq/templates/note` and put all boilerplate files inside.
+The root directory for LaTeX templates is `~/.guiteliq/templates`.
+To create your own template, say `note`, create a direcory `~/.guiteliq/templates/note` and put all necessary files (e.g. preamble and bibliography) inside.
 
 There are several conventions:
 - The main `.tex` file should be called `main.tex`.
