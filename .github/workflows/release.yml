@@ -78,10 +78,10 @@ jobs:
           cabal install --install-method=copy --overwrite-policy=always --installdir=dist
 
       - name: Set writings binary path name
-        run: echo "::set-env name=WRITINGS_BINARY_PATH::./dist/ai-writings"
+        run: echo "WRITINGS_BINARY_PATH=./dist/ai-writings" >> $GITHUB_ENV
 
       - name: Set readings binary path name
-        run: echo "::set-env name=READINGS_BINARY_PATH::./dist/ai-readings"
+        run: echo "READINGS_BINARY_PATH=./dist/ai-readings" >> $GITHUB_ENV
 
       - name: Compress writings binary
         uses: svenstaro/upx-action@2.0.1
