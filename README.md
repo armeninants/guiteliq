@@ -8,11 +8,6 @@
 
 Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, and `LaTeX`, `Markdown` writings, using your preferred editors and viewers.
 
-### Assumptions
-
-- You keep all your writings and readings within your home directory (`~`).
-- The writings that you don't want to be listed have an extension prefix `.inc`, i.e. `.inc.tex` or `.inc.md`.
-
 ## Structure
 
 - [`ai-writings` - navigate and search your LaTeX docs](#ai-writings---navigate-and-search-your-latex-docs)
