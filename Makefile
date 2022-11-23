@@ -17,7 +17,7 @@ hoogle-server:
 .PHONY: install
 ## Install the binaries
 install:
-	@cabal install --overwrite-policy=always
+	@cabal install --install-method=copy --overwrite-policy=always
 
 #===================== Help =====================
 
