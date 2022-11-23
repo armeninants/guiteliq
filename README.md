@@ -5,7 +5,6 @@
 [![stability-experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-
 Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, and `LaTeX`, `Markdown` writings, using your preferred editors and viewers.
 
 ## Structure
