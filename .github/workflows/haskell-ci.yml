@@ -20,7 +20,6 @@ jobs:
       with:
         ghc-version: '8.8.4'
         cabal-version: '1.12'
-
     - name: Cache
       uses: actions/cache@v3
       env:
