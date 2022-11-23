@@ -86,45 +86,29 @@ library
   build-depends:
       Glob
     , HaTeX
-    , JuicyPixels
     , aeson
     , aeson-pretty
     , base >=4.13 && <5
     , brick <0.70
     , bytestring
     , conduit
-    , config-ini
     , directory
-    , directory-tree
     , envparse
     , extra
-    , file-embed
     , filepath
-    , first-class-families
-    , ghc
-    , http-client
-    , http-client-tls
     , lens
     , load-env
     , microlens
-    , microlens-mtl
     , microlens-th
-    , mtl
     , optparse-simple
     , pandoc
     , pretty-show
-    , process
     , process-extras
-    , protolude
-    , random
     , rio
-    , scientific
     , shelly
     , streaming-commons
     , text
     , time
-    , unix
-    , uri-encode
     , utf8-string
     , vector
     , vector-sized
@@ -168,46 +152,30 @@ executable ai-readings
   build-depends:
       Glob
     , HaTeX
-    , JuicyPixels
     , aeson
     , aeson-pretty
     , base >=4.13 && <5
     , brick <0.70
     , bytestring
     , conduit
-    , config-ini
     , directory
-    , directory-tree
     , envparse
     , extra
-    , file-embed
     , filepath
-    , first-class-families
-    , ghc
     , guiteliq
-    , http-client
-    , http-client-tls
     , lens
     , load-env
     , microlens
-    , microlens-mtl
     , microlens-th
-    , mtl
     , optparse-simple
     , pandoc
     , pretty-show
-    , process
     , process-extras
-    , protolude
-    , random
     , rio
-    , scientific
     , shelly
     , streaming-commons
     , text
     , time
-    , unix
-    , uri-encode
     , utf8-string
     , vector
     , vector-sized
@@ -251,46 +219,30 @@ executable ai-writings
   build-depends:
       Glob
     , HaTeX
-    , JuicyPixels
     , aeson
     , aeson-pretty
     , base >=4.13 && <5
     , brick <0.70
     , bytestring
     , conduit
-    , config-ini
     , directory
-    , directory-tree
     , envparse
     , extra
-    , file-embed
     , filepath
-    , first-class-families
-    , ghc
     , guiteliq
-    , http-client
-    , http-client-tls
     , lens
     , load-env
     , microlens
-    , microlens-mtl
     , microlens-th
-    , mtl
     , optparse-simple
     , pandoc
     , pretty-show
-    , process
     , process-extras
-    , protolude
-    , random
     , rio
-    , scientific
     , shelly
     , streaming-commons
     , text
     , time
-    , unix
-    , uri-encode
     , utf8-string
     , vector
     , vector-sized

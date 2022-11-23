@@ -26,45 +26,45 @@ dependencies:
 - brick <0.70
 - vty
 - vector
-- mtl
+# - mtl
 - lens
 - microlens
-- microlens-mtl
+- microlens-th
+# - microlens-mtl
 - conduit
-- unix
+# - unix
 - HaTeX
-- Glob
+# - Glob
 - time
-- process
+# - process
 - filepath
 - aeson
 - aeson-pretty
-- protolude
-- http-client
-- http-client-tls
-- uri-encode
+# - protolude
+# - http-client
+# - http-client-tls
+# - uri-encode
 - text
 - utf8-string
-- scientific
+# - scientific
 - envparse
 - load-env
 - directory
-- ghc
-- microlens-th
-- config-ini
-- random
-- file-embed
+# - ghc
+# - config-ini
+# - random
+# - file-embed
 - bytestring
 - shelly
 - pretty-show
-- directory-tree
+# - directory-tree
 - streaming-commons
-- JuicyPixels
+# - JuicyPixels
 - Glob
 - vector-sized
 - extra
 - process-extras
-- first-class-families
+# - first-class-families
 - pandoc
 
 ghc-options:
