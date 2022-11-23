@@ -3,9 +3,6 @@
 [![GitHub CI](https://github.com/armeninants/guiteliq/workflows/Haskell-CI/badge.svg)](https://github.com/armeninants/guiteliq/actions)
 [![stability-experimental](https://img.shields.io/badge/stability-experimental-orange.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#experimental)
 
-<!-- [![armeninants](https://circleci.com/gh/armeninants/guiteliq.svg?style=shield)](https://circleci.com/gh/armeninants/guiteliq) -->
-
-![Haskell](https://img.shields.io/badge/Haskell-5e5086?style=for-the-badge&logo=haskell&logoColor=white)
 
 Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, and `LaTeX`, `Markdown` writings, using your preferred editors and viewers.
 

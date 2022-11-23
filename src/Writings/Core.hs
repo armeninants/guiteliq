@@ -16,7 +16,6 @@ module Writings.Core where
 import App.Config
 import qualified App.Config as Conf
 import Conduit
-import Data.FileEmbed (embedDir)
 import qualified Data.Text as T
 import qualified Data.Vector as Vec
 import Graphics.Vty.Input.Events
@@ -33,9 +32,9 @@ import UI.ListTUI
 import Utils.LaTeX
 import Writings.Model
 
+mapFst :: (a -> c) -> [(a, b)] -> [(c, b)]
+mapFst f xys = [(f x, y) | (x, y) <- xys]
 
-mapFst :: (a->c) -> [(a,b)] -> [(c,b)]
-mapFst f xys = [(f x, y) | (x,y) <- xys]
 -- ------------------------------------------
 -- Actions on Files
 -- ------------------------------------------
@@ -79,10 +78,6 @@ listSubdirs dir = fmap takeFileName <$> listSubdirsAbs dir
 listSubdirsAbs :: FilePath -> IO [FilePath]
 listSubdirsAbs dir =
   listDirectory dir >>= filterM doesDirectoryExist . fmap (dir </>)
-
--- | Hard-coded tamplates
--- defaultTemplates :: [(FilePath, ByteString)]
--- defaultTemplates = $(embedDir "templates")
 
 -- | Unrolls the hard-coded templates into the file system.
 writeDirIn :: FilePath -> [(FilePath, ByteString)] -> IO ()
@@ -137,19 +132,6 @@ openWriting DocMetadata {..} = do
   liftIO $ case _docType of
     LaTeX -> openLaTeXDocument conf _docPath
     Markdown -> openMarkdownDocument conf _docPath
-
--- | Checks the templates directory.
--- If it doesn't exist, then creates it.
--- Returns a list of template names – the list of subdirectories
--- of the templates directory.
--- provisionTemplates :: RIO Config ()
--- provisionTemplates = do
---   c <- ask
---   let templatesDir' = c ^. templatesDir
---   createDirectoryIfMissing True templatesDir'
---   subdirs <- liftIO $ listSubdirs templatesDir'
---   when (null subdirs) $ do
---     liftIO $ writeDirIn templatesDir' defaultTemplates
 
 -- | TODO: check whether the new element exists in the vector before adding it
 updateListWithDoc ::
