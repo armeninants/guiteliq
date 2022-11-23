@@ -48,13 +48,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Set tag name
-        uses: olegtarasov/get-tag@v2
-        id: tag
-        with:
-          tagRegex: "v(.*)"
-          tagRegexGroup: 1
-
       - name: Setup Haskell
         uses: haskell/actions/setup@v2.0.1
         id: setup-haskell-cabal
@@ -111,7 +104,7 @@ jobs:
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
           asset_path: ${{ env.WRITINGS_BINARY_PATH }}
-          asset_name: ai-writings-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}
+          asset_name: ai-writings-${{ runner.os }}-ghc-${{ matrix.ghc }}
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset Readings
@@ -122,5 +115,5 @@ jobs:
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
           asset_path: ${{ env.READINGS_BINARY_PATH }}
-          asset_name: ai-readings-${{ steps.tag.outputs.tag }}-${{ runner.os }}-ghc-${{ matrix.ghc }}
+          asset_name: ai-readings-${{ runner.os }}-ghc-${{ matrix.ghc }}
           asset_content_type: application/octet-stream
