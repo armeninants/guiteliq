@@ -12,10 +12,10 @@ Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, 
 - [`ai-writings` - navigate and search your LaTeX and Markdown docs](#ai-writings---navigate-and-search-your-latex-and-markdown-docs)
 - [`ai-readings` - single access point for your library](#ai-readings---single-access-point-for-your-library)
 - [Installation](#installation)
-  - [Compile from the source](#compile-from-the-source)
-  - [Download a binary release](#download-a-binary-release)
+  - [Build locally](#build-locally)
+  - [Download executables](#download-executables)
 - [Configuration](#configuration)
-- [How to customize LaTeX templates](#how-to-customize-latex-templates)
+- [How to add LaTeX templates](#how-to-add-latex-templates)
 
 ## `ai-writings` - navigate and search your LaTeX and Markdown docs
 
@@ -33,14 +33,14 @@ Simple TUI (terminal user interface) for accessing your `PDF`, `DjVu` readings, 
 
 ## Installation
 
-### Compile from the source
+### Build locally
 Haskell compiler is a prerequisite, installation instructions are [here](https://www.haskell.org/ghcup/).
 
 To compile and install the executables, run `make install`.
 
 Et voilà, Guitéliq is up and running!
 
-### Download a binary release
+### Download executables
 You can download binary directly [from GitHub releases](https://github.com/armeninants/guiteliq/releases).
 
 After downloading binary, make it executable and copy it under convenient location, for example:
@@ -75,4 +75,4 @@ To create your own template, say `note`, create a direcory `~/.guiteliq/template
 There are several conventions:
 - The main `.tex` file should be called `main.tex`.
 - Inside `main.tex`, there should be an (empty) command `\title{}`.
-- All included files should have an extension `.inc.tex`.
+- All included `LaTeX` files should have an extension `.inc.tex`.
