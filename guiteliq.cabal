@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           guiteliq
-version:        0.2.0
+version:        0.2.8
 description:    Please see the README on Github at <https://github.com/armeninants/guiteliq#readme>
 homepage:       https://github.com/armeninants/guiteliq#readme
 bug-reports:    https://github.com/armeninants/guiteliq/issues
@@ -16,7 +16,7 @@ license:        MIT
 license-file:   LICENSE
 build-type:     Simple
 tested-with:
-    GHC == 8.8.4
+    GHC == 9.4.2
 extra-source-files:
     README.md
     ChangeLog.md
@@ -86,8 +86,8 @@ library
     , HaTeX
     , aeson
     , aeson-pretty
-    , base >=4.13 && <5
-    , brick <0.70
+    , base >=4.16 && <5
+    , brick >=1.4
     , bytestring
     , conduit
     , directory
@@ -152,8 +152,8 @@ executable ai-readings
     , HaTeX
     , aeson
     , aeson-pretty
-    , base >=4.13 && <5
-    , brick <0.70
+    , base >=4.16 && <5
+    , brick >=1.4
     , bytestring
     , conduit
     , directory
@@ -219,8 +219,8 @@ executable ai-writings
     , HaTeX
     , aeson
     , aeson-pretty
-    , base >=4.13 && <5
-    , brick <0.70
+    , base >=4.16 && <5
+    , brick >=1.4
     , bytestring
     , conduit
     , directory

@@ -1,11 +1,11 @@
 name:                guiteliq
-version:             0.2.0
+version:             0.2.8
 github:              armeninants/guiteliq
 license:             MIT
 author:              Armen Inants
 maintainer:          armen@inants.com
 copyright:           2022 Armen Inants
-tested-with:         GHC == 8.8.4
+tested-with:         GHC == 9.4.2
 extra-source-files:
 - README.md
 - ChangeLog.md
@@ -20,10 +20,10 @@ extra-source-files:
 description:         Please see the README on Github at <https://github.com/armeninants/guiteliq#readme>
 
 dependencies:
-- base >=4.13 && <5
+- base >=4.16 && <5
 - optparse-simple
 - rio
-- brick <0.70
+- brick >=1.4
 - vty
 - vector
 # - mtl
