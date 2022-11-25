@@ -27,9 +27,9 @@ import Control.Lens hiding (cons, view, (^.))
 import qualified Data.Streaming.Filesystem as F
 import qualified Data.Text as T
 import Data.Time (UTCTime)
-import System.Directory (getModificationTime)
 import Interface.DOM
 import RIO hiding (on)
+import System.Directory (getModificationTime)
 import System.FilePath.Posix (takeBaseName, takeExtension)
 
 -- ------------------------------------------
@@ -46,17 +46,17 @@ data DocType = PDF | DJVU
 -- | Document metadata.
 -- Data about documents needed for representing in a list and accessing.
 data DocMetadata = DocMetadata
-  { _docTitle :: Text,
-    _docModificationTime :: UTCTime,
-    _docPath :: FilePath,
-    _docType :: DocType,
-    _docSymbolic :: Bool
+  { _docTitle :: !Text,
+    _docModificationTime :: !UTCTime,
+    _docPath :: !FilePath,
+    _docType :: !DocType,
+    _docSymbolic :: !Bool
   }
   deriving (Show, Eq, Ord)
 
 data DirMetadata = DirMetadata
-  { _dirPath :: FilePath,
-    _dirSymbolic :: Bool
+  { _dirPath :: !FilePath,
+    _dirSymbolic :: !Bool
   }
   deriving (Show, Eq, Ord)
 
@@ -76,7 +76,7 @@ instance DocumentOrganizationModel AppDOM where
           _ -> return $ FPath Nothing
       _
         | ft `elem` [F.FTDirectory, F.FTDirectorySym] ->
-            return $ DPath $ DirMetadata fp (ft /= F.FTDirectory)
+          return $ DPath $ DirMetadata fp (ft /= F.FTDirectory)
       _ -> return OtherPath
   traversalPolicy Proxy _dirCat = True
 

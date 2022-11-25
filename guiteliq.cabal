@@ -27,18 +27,15 @@ source-repository head
 
 library
   exposed-modules:
-      App.Config
-      Interface.Attribute
-      Interface.BrickAttribute
+      Common.Config
       Interface.DOM
-      Interface.ListInterface
       Readings
       Readings.Core
       Readings.Logger
       Readings.Model
       Readings.Options
       Readings.Settings
-      UI.ListTUI
+      Readings.TUI
       Utils.Brick
       Utils.LaTeX
       Utils.Markdown
@@ -51,6 +48,7 @@ library
       Writings.Model
       Writings.Options
       Writings.Settings
+      Writings.TUI
   other-modules:
       Paths_guiteliq
   hs-source-dirs:

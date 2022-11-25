@@ -21,7 +21,6 @@ import RIO.Process
     ProcessContext,
     mkDefaultProcessContext,
   )
-import Writings.Core
 import Writings.Logger (loggerOptions)
 import Writings.Options
   ( Options (Options, optionsEnvFile),
@@ -32,6 +31,7 @@ import Writings.Settings
     HasSettings (..),
     loadSettings,
   )
+import Writings.TUI
 
 -- ---------------------------------------------
 -- Main

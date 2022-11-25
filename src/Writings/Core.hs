@@ -11,14 +11,14 @@ Stability   : experimental
 -}
 module Writings.Core where
 
-import App.Config
-import qualified App.Config as Conf
+import Common.Config
+import qualified Common.Config as Conf
 import Conduit
 import qualified Data.Text as T
 import qualified Data.Vector as Vec
 import Graphics.Vty.Input.Events
 import Interface.DOM
-import Interface.ListInterface
+-- import Interface.ListInterface
 import RIO hiding (on)
 import RIO.ByteString (writeFile)
 import RIO.Directory (createDirectoryIfMissing, doesDirectoryExist, listDirectory)
@@ -26,7 +26,6 @@ import RIO.FilePath (isValid, takeDirectory, takeFileName, (</>))
 import RIO.List (sortBy)
 import RIO.Time (defaultTimeLocale, formatTime)
 import Shelly hiding (path, (</>))
-import UI.ListTUI
 import Utils.LaTeX
 import Writings.Model
 
@@ -87,31 +86,6 @@ createAndWriteFile path content = do
   createDirectoryIfMissing True $ takeDirectory path
   writeFile path content
 
--- | Creates a new document, returns the path of the TeX file and whether the project is new
-createNewDocument :: Text -> Text -> Maybe (Int, Text) -> RIO Config (Maybe DocMetadata)
-createNewDocument title name mTemplate = do
-  conf <- ask
-  -- printf "Creating a project %s from template %s with a title \"%s\"\n" name template title
-  case mTemplate of
-    Just (_i, "markdown") -> liftIO $ do
-      let mdFilePath = (conf ^. writingsDir) </> T.unpack name </> (T.unpack name <> ".md")
-      createAndWriteFile mdFilePath $ "# " <> encodeUtf8 title
-      getTeXInfo mdFilePath
-    Just (_i, template) -> do
-      let tmplDir = (conf ^. templatesDir) </> T.unpack template
-          newProjectDir = (conf ^. writingsDir) </> T.unpack name
-      projDirExists <- liftIO $ doesDirectoryExist newProjectDir
-      let texFilePath = newProjectDir </> (T.unpack name <> ".tex")
-      liftIO $
-        unless projDirExists $ do
-          shelly $
-            escaping False $ do
-              cp_r tmplDir newProjectDir
-              mv (newProjectDir </> "main.tex") texFilePath
-          onLaTeXFile texFilePath $ setTitle title
-      liftIO $ getTeXInfo texFilePath
-    Nothing -> return Nothing
-
 -- -----------------------------------------------
 
 openTemplates :: RIO Config ()
@@ -145,68 +119,81 @@ provisionTemplates = do
   createDirectoryIfMissing True templatesDir'
 
 -- ---------------------------------------------
--- Writings instance of List Interface
+-- Exported functions
 -- ---------------------------------------------
 
-type WIF = [TextAttr Conf.Config, TextAttr Conf.Config, MultChoiceAttr Conf.Config]
+-- | Creates a new document, returns the path of the TeX file and whether the project is new
+createNewDocument :: Text -> Text -> Maybe (Int, Text) -> RIO Config (Maybe DocMetadata)
+createNewDocument title name mTemplate = do
+  conf <- ask
+  -- printf "Creating a project %s from template %s with a title \"%s\"\n" name template title
+  case mTemplate of
+    Just (_i, "markdown") -> liftIO $ do
+      let mdFilePath = (conf ^. writingsDir) </> T.unpack name </> (T.unpack name <> ".md")
+      createAndWriteFile mdFilePath $ "# " <> encodeUtf8 title
+      getTeXInfo mdFilePath
+    Just (_i, template) -> do
+      let tmplDir = (conf ^. templatesDir) </> T.unpack template
+          newProjectDir = (conf ^. writingsDir) </> T.unpack name
+      projDirExists <- liftIO $ doesDirectoryExist newProjectDir
+      let texFilePath = newProjectDir </> (T.unpack name <> ".tex")
+      liftIO $
+        unless projDirExists $ do
+          shelly $
+            escaping False $ do
+              cp_r tmplDir newProjectDir
+              mv (newProjectDir </> "main.tex") texFilePath
+          onLaTeXFile texFilePath $ setTitle title
+      liftIO $ getTeXInfo texFilePath
+    Nothing -> return Nothing
 
-instance HasListInterface Conf.Config DocMetadata WIF where
-  createNewItem :: Text -> Text -> Maybe (Int, Text) -> RIO Conf.Config (Maybe DocMetadata)
-  createNewItem = createNewDocument
+getItems :: RIO Conf.Config (Vec.Vector DocMetadata)
+getItems = view Conf.writingsDir >>= liftIO . getDocsMetaSorted
 
-  getItems :: RIO Conf.Config (Vec.Vector DocMetadata)
-  getItems = view Conf.writingsDir >>= liftIO . getDocsMetaSorted
+renderL :: DocMetadata -> Text
+renderL DocMetadata {..} = _docTitle
 
-  renderL :: DocMetadata -> Text
-  renderL DocMetadata {..} = _docTitle
+renderR :: DocMetadata -> Text
+renderR DocMetadata {..} = T.pack $ formatTime defaultTimeLocale "%Y-%m-%d" _docModificationTime
 
-  renderR :: DocMetadata -> Text
-  renderR DocMetadata {..} = T.pack $ formatTime defaultTimeLocale "%Y-%m-%d" _docModificationTime
+globalActions :: [(Text, (Key, [Modifier]), RIO Conf.Config ())]
+globalActions = [("Open templates", (KChar 't', [MCtrl]), openTemplates), ("Open config", (KChar 'g', [MCtrl]), openConfig)]
 
-  globalActions :: [(Text, KeyBinding, RIO Conf.Config ())]
-  globalActions = [("Open templates", (KChar 't', [MCtrl]), openTemplates), ("Open config", (KChar 'g', [MCtrl]), openConfig)]
+itemActions :: [(Text, (Key, [Modifier]), DocMetadata -> RIO Conf.Config ())]
+itemActions = [("Open", (KEnter, []), openWriting)]
 
-  itemActions :: [(Text, KeyBinding, DocMetadata -> RIO Conf.Config ())]
-  itemActions = [("Open", (KEnter, []), openWriting)]
+newItemCallback :: DocMetadata -> RIO Conf.Config ()
+newItemCallback = openWriting
 
-  newItemCallback :: DocMetadata -> RIO Conf.Config ()
-  newItemCallback = openWriting
+matchItem :: Text -> DocMetadata -> Bool
+matchItem query_ DocMetadata {..} =
+  let query = T.toLower $ T.strip query_
+   in (T.null query || T.isInfixOf query (T.toLower _docTitle))
 
-  matchItem :: Text -> DocMetadata -> Bool
-  matchItem query_ DocMetadata {..} =
-    let query = T.toLower $ T.strip query_
-     in (T.null query || T.isInfixOf query (T.toLower _docTitle))
+initAction :: RIO Conf.Config ()
+initAction = provisionTemplates
 
-  initAction :: RIO Conf.Config ()
-  initAction = provisionTemplates
+-- attrsDescVector :: AttrList Conf.Config WIF
+-- attrsDescVector =
+--   TextAttr
+--     { tLabel = "title",
+--       tInitial = return "",
+--       tValid = not . T.null
+--     }
+--     :> TextAttr
+--       { tLabel = "name",
+--         tInitial = return "",
+--         tValid = isValid . T.unpack
+--       }
+--     :> MultChoiceAttr
+--       { mLabel = "template",
+--         mInitial = getTemplateDirs,
+--         mValid = isJust
+--       }
+--     :> NoAttr
 
-  attrsDescVector :: AttrList Conf.Config WIF
-  attrsDescVector =
-    TextAttr
-      { tLabel = "title",
-        tInitial = return "",
-        tValid = not . T.null
-      }
-      :> TextAttr
-        { tLabel = "name",
-          tInitial = return "",
-          tValid = isValid . T.unpack
-        }
-      :> MultChoiceAttr
-        { mLabel = "template",
-          mInitial = getTemplateDirs,
-          mValid = isJust
-        }
-      :> NoAttr
+itemName :: Text
+itemName = "document"
 
-  getConfig :: IO Conf.Config
-  getConfig = Conf.getConfig
-
-  itemName :: Text
-  itemName = "document"
-
-  appName :: Text
-  appName = "writings"
-
-runBrickApp :: IO (BrickState Conf.Config DocMetadata WIF)
-runBrickApp = runBrickAppG @Conf.Config @DocMetadata @WIF
+appName :: Text
+appName = "writings"

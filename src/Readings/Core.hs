@@ -13,18 +13,16 @@ Core of Readings App
 -}
 module Readings.Core where
 
-import App.Config
-import qualified App.Config as Conf
+import Common.Config
+import qualified Common.Config as Conf
 import Conduit
 import qualified Data.Text as T
 import qualified Data.Vector as Vec
 import Graphics.Vty.Input.Events
 import Interface.DOM
-import Interface.ListInterface
 import RIO hiding (on)
 import RIO.List (sortBy)
 import Readings.Model
-import UI.ListTUI
 import Utils.Shell
 
 -- ------------------------------------------
@@ -77,50 +75,41 @@ updateListWithDoc l newItm = Vec.cons newItm l
 -- Readings instance of List Interface
 -- ---------------------------------------------
 
-type RIF = '[]
+createNewItem :: RIO Conf.Config (Maybe DocMetadata)
+createNewItem = createNewReading
 
-instance HasListInterface Conf.Config DocMetadata RIF where
-  createNewItem :: RIO Conf.Config (Maybe DocMetadata)
-  createNewItem = createNewReading
+getItems :: RIO Conf.Config (Vec.Vector DocMetadata)
+getItems = view Conf.readingsDir >>= liftIO . getDocsMetaSorted
 
-  getItems :: RIO Conf.Config (Vec.Vector DocMetadata)
-  getItems = view Conf.readingsDir >>= liftIO . getDocsMetaSorted
+renderL :: DocMetadata -> Text
+renderL DocMetadata {..} = _docTitle
 
-  renderL :: DocMetadata -> Text
-  renderL DocMetadata {..} = _docTitle
+-- renderR DocMetadata {..} = T.pack $ formatTime defaultTimeLocale "%Y-%m-%d" _docModificationTime
+renderR :: DocMetadata -> Text
+renderR _ = ""
 
-  -- renderR DocMetadata {..} = T.pack $ formatTime defaultTimeLocale "%Y-%m-%d" _docModificationTime
-  renderR :: DocMetadata -> Text
-  renderR _ = ""
+globalActions :: [(Text, (Key, [Modifier]), RIO Conf.Config ())]
+globalActions = [("Open config", (KChar 'g', [MCtrl]), openConfig)]
 
-  globalActions :: [(Text, KeyBinding, RIO Conf.Config ())]
-  globalActions = [("Open config", (KChar 'g', [MCtrl]), openConfig)]
+itemActions :: [(Text, (Key, [Modifier]), DocMetadata -> RIO Conf.Config ())]
+itemActions = [("Open", (KEnter, []), openReading)]
 
-  itemActions :: [(Text, KeyBinding, DocMetadata -> RIO Conf.Config ())]
-  itemActions = [("Open", (KEnter, []), openReading)]
+newItemCallback :: DocMetadata -> RIO Conf.Config ()
+newItemCallback = openReading
 
-  newItemCallback :: DocMetadata -> RIO Conf.Config ()
-  newItemCallback = openReading
+matchItem :: Text -> DocMetadata -> Bool
+matchItem query_ DocMetadata {..} =
+  let query = T.toLower $ T.strip query_
+   in (T.null query || T.isInfixOf query (T.toLower _docTitle))
 
-  matchItem :: Text -> DocMetadata -> Bool
-  matchItem query_ DocMetadata {..} =
-    let query = T.toLower $ T.strip query_
-     in (T.null query || T.isInfixOf query (T.toLower _docTitle))
+initAction :: RIO Conf.Config ()
+initAction = return ()
 
-  initAction :: RIO Conf.Config ()
-  initAction = return ()
+itemName :: Text
+itemName = "reading"
 
-  attrsDescVector :: AttrList Conf.Config RIF
-  attrsDescVector = hEmpty
+appName :: Text
+appName = "readings"
 
-  getConfig :: IO Conf.Config
-  getConfig = Conf.getConfig
-
-  itemName :: Text
-  itemName = "reading"
-
-  appName :: Text
-  appName = "readings"
-
-runBrickApp :: IO (BrickState Conf.Config DocMetadata RIF)
-runBrickApp = runBrickAppG @Conf.Config @DocMetadata @RIF
+-- runBrickApp :: IO (BrickState Conf.Config DocMetadata
+-- runBrickApp = runBrickAppG @Conf.Config @DocMetadata

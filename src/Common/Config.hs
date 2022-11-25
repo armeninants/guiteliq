@@ -1,5 +1,5 @@
 {-
-Module      : App.Config
+Module      : Config
 Description : Common Config Module
 Copyright   : (c) Armen Inants, 2022
 License     : MIT
@@ -8,8 +8,8 @@ Stability   : experimental
 -}
 {-# LANGUAGE TemplateHaskell #-}
 
-module App.Config
-  ( module App.Config,
+module Common.Config
+  ( module Common.Config,
   )
 where
 

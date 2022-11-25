@@ -4,17 +4,17 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 {-
-Module      : UI.ListTUI
+Module      : Writings.TUI
 Description : Generic List Application
 Copyright   : (c) Armen Inants, 2022
 License     : MIT
-Maintainer  : armen@inants.com
+Maintainer  : armen.com
 Stability   : experimental
 
 Generic list application based on Brick TUI and abstract list interface.
 -}
 
-module UI.ListTUI where
+module Writings.TUI where
 
 import Brick
 import qualified Brick.AttrMap as A
@@ -27,6 +27,7 @@ import qualified Brick.Widgets.Core as BC
 import qualified Brick.Widgets.Dialog as D
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
+import Common.Config
 import Conduit
 import Data.List (find)
 import qualified Data.Text as T
@@ -35,22 +36,16 @@ import qualified Data.Vector as Vec
 import Data.Version (showVersion)
 import qualified Graphics.Vty as V
 import Graphics.Vty.Input.Events hiding (Event)
-import Interface.BrickAttribute
-import Interface.ListInterface
 import Lens.Micro ((?~))
 import Lens.Micro.TH (makeLenses)
 import Paths_guiteliq (version)
 import RIO hiding (on)
+import RIO.FilePath (isValid)
+import RIO.List (intercalate)
 import Utils.Brick
 import Utils.Text
-
--- ------------------------------------------
-
-type HasBrickListInterface conf itemModel newItemAttrs =
-  ( HasListInterface conf itemModel newItemAttrs,
-    All (BrickAttribute conf ResourceName) newItemAttrs,
-    ApplyFuncToAttrs conf ResourceName newItemAttrs (RIO conf (Maybe itemModel))
-  )
+import Writings.Core
+import Writings.Model
 
 -- ------------------------------------------
 -- Helpers
@@ -71,26 +66,50 @@ getWidgetHorizontal = txt . mconcat . fmap go
 
 type Event = ()
 
+data NewItemAttr
+  = NewItemTitle
+  | NewItemName
+  | NewItemTemplate
+  deriving (Eq, Ord, Show)
+
 data ResourceName
   = ItemsList
   | Search
-  | NewItem Text
+  | NewItem !NewItemAttr
   deriving (Eq, Ord, Show)
 
-instance BrickResource ResourceName where
-  itemAttrResource = NewItem
+data NewItemState = NewItemState
+  { _nameState :: !(E.Editor Text ResourceName),
+    _titleState :: !(E.Editor Text ResourceName),
+    _templateState :: !(L.List ResourceName Text)
+  }
 
-data BrickState conf itemModel newItemAttrs = BrickState
-  { _config :: conf,
-    _focusRing :: F.FocusRing ResourceName,
-    -- _help :: Maybe (D.Dialog HelpChoice),
-    _itemsList :: L.List ResourceName itemModel,
-    _search :: E.Editor Text ResourceName,
-    _allItems :: Vector itemModel,
-    _newItem :: Maybe (BrickAttrStateList conf ResourceName newItemAttrs)
+data BrickState = BrickState
+  { _config :: !Config,
+    _focusRing :: !(F.FocusRing ResourceName),
+    _itemsList :: !(L.List ResourceName DocMetadata),
+    _search :: !(E.Editor Text ResourceName),
+    _allItems :: !(Vector DocMetadata),
+    _newItem :: !(Maybe NewItemState)
   }
 
 makeLenses ''BrickState
+makeLenses ''NewItemState
+
+-- ---------------------------------------------
+
+getEditorsValue :: E.Editor Text ResourceName -> Text
+getEditorsValue = mconcat . E.getEditContents
+
+getListValue :: L.List ResourceName Text -> Maybe (Int, Text)
+getListValue = L.listSelectedElement
+
+validateAttrsValues :: NewItemState -> Bool
+validateAttrsValues NewItemState {..} =
+  let validName = getEditorsValue _nameState & not . T.null
+      validTitle = getEditorsValue _titleState & isValid . T.unpack
+      validTemplate = getListValue _templateState & isJust
+   in validName && validTitle && validTemplate
 
 -- ---------------------------------------------
 
@@ -98,13 +117,11 @@ gqVersion :: Text
 gqVersion = showVersion version & T.pack
 
 initBrickState ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  IO (BrickState conf itemModel newItemAttrs)
+  IO BrickState
 initBrickState = do
-  conf <- getConfig @conf
-  initAction @conf & runRIO conf
-  l <- getItems @conf & runRIO conf
+  conf <- getConfig
+  initAction & runRIO conf
+  l <- getItems & runRIO conf
   pure
     BrickState
       { _config = conf,
@@ -119,16 +136,12 @@ initBrickState = do
 itemsListFocus :: F.FocusRing ResourceName
 itemsListFocus = F.focusRing [ItemsList]
 
-runBrickAppG ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  IO (BrickState conf itemModel newItemAttrs)
-runBrickAppG = initBrickState >>= defaultMain brickApp
+runBrickApp ::
+  IO BrickState
+runBrickApp = initBrickState >>= defaultMain brickApp
 
 brickApp ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  M.App (BrickState conf itemModel newItemAttrs) Event ResourceName
+  M.App BrickState Event ResourceName
 brickApp =
   M.App
     { M.appDraw = drawUI,
@@ -137,6 +150,41 @@ brickApp =
       M.appStartEvent = pure,
       M.appAttrMap = theMap
     }
+
+-- ------------------------------------------
+
+renderAttrsWidgets ::
+  NewItemState ->
+  F.FocusRing ResourceName ->
+  Widget ResourceName
+renderAttrsWidgets NewItemState {..} fRing =
+  intercalate [vLimit 1 (fill ' ')] ws & vBox
+  where
+    ws =
+      [ [ txt "name",
+          B.hBorder,
+          vLimit 1 $
+            E.renderEditor
+              (txt . T.unlines)
+              (F.focusGetCurrent fRing == Just (NewItem NewItemName))
+              _nameState
+        ],
+        [ txt "title",
+          B.hBorder,
+          vLimit 1 $
+            E.renderEditor
+              (txt . T.unlines)
+              (F.focusGetCurrent fRing == Just (NewItem NewItemTitle))
+              _titleState
+        ],
+        [ txt "template",
+          B.hBorder,
+          L.renderList
+            (const txt)
+            (F.focusGetCurrent fRing == Just (NewItem NewItemTemplate))
+            _templateState
+        ]
+      ]
 
 -- ------------------------------------------
 -- Widgets
@@ -157,14 +205,12 @@ theMap _s =
     ]
 
 drawUI ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
+  BrickState ->
   [Widget ResourceName]
 drawUI s = case (currentFocus, s ^. newItem) of
   (Just ItemsList, _) -> [mainScreen]
-  (Just (NewItem item), Just nd) | item `elem` getAttrsNames (attrsDescVector @conf) -> [drawNewItem s nd, mainScreen]
-  _ -> []
+  (Just (NewItem _), Just nd) -> [drawNewItem nd (s ^. focusRing), mainScreen]
+  _other -> []
   where
     currentFocus = F.focusGetCurrent (s ^. focusRing)
 
@@ -176,55 +222,50 @@ drawUI s = case (currentFocus, s ^. newItem) of
     searchIsEmpty = E.getEditContents (s ^. search) & T.concat & T.null
 
     itemsListWidget =
-      withBorderStyle BS.unicodeBold
-        $ joinBorders
+      withBorderStyle BS.unicodeBold $
+        joinBorders
           . B.borderWithLabel (txt title)
-        $ vBox [L.renderList (drawDocumentItem @conf) True (s ^. itemsList)]
+          $ vBox [L.renderList drawDocumentItem True (s ^. itemsList)]
 
-    title = " GUITELIQ " <> allCaps (appName @conf) <> " " <> "v" <> gqVersion <> " "
+    title = " GUITELIQ " <> allCaps appName <> " " <> "v" <> gqVersion <> " "
 
     statusBar =
       vLimit 1 $
         hBox
           [ docNavWidget s,
-            getWidgetHorizontal (itemActions @conf),
-            getWidgetHorizontal (globalActions @conf),
+            getWidgetHorizontal itemActions,
+            getWidgetHorizontal globalActions,
             newItemWidget
           ]
 
     searchBar = vLimit 1 $ E.renderEditor (txt . T.unlines) False (s ^. search)
-    newItemWidget =
-      if hNull $ attrsDescVector @conf
-        then txt ""
-        else txt ("  Ctrl+N:New " <> itemName @conf)
+    newItemWidget = txt ("  Ctrl+N:New " <> itemName)
 
 drawNewItem ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
-  BrickAttrStateList conf ResourceName newItemAttrs ->
+  NewItemState ->
+  F.FocusRing ResourceName ->
   Widget ResourceName
-drawNewItem s editors =
+drawNewItem ns fRing =
   withBorderStyle BS.unicodeBold $
     C.centerLayer $
-      B.borderWithLabel (txt $ " New " <> capitalise (itemName @conf) <> " ") $
+      B.borderWithLabel (txt $ " New " <> capitalise itemName <> " ") $
         padLeftRight 2 $
           padTopBottom 1 $
             hLimit 70 $
               vLimit 30 $
                 vBox
-                  [ renderAttrsWidgets editors (s ^. focusRing),
+                  [ renderAttrsWidgets ns fRing,
                     txt " ",
                     txt $
                       "[Esc]    - cancel.\n"
                         <> "[Tab]    - switch between editor and suggestions.\n"
                         <> "[Enter]  - create new "
-                        <> itemName @conf
+                        <> itemName
                         <> ".\n"
                   ]
 
 docNavWidget ::
-  BrickState conf itemModel newItemAttrs ->
+  BrickState ->
   Widget ResourceName
 docNavWidget s =
   txt "Item " <+> currentDocument <+> txt " of " <+> totalDocuments <+> txt " "
@@ -236,68 +277,62 @@ docNavWidget s =
     totalDocuments = str $ show $ Vec.length $ s ^. itemsList . L.listElementsL
 
 drawDocumentItem ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
   Bool ->
-  itemModel ->
+  DocMetadata ->
   Widget ResourceName
 drawDocumentItem _ model =
   BC.vLimit 1 $
-    BC.hBox [txt (renderL @conf model), txt " ", BC.fill ' ', txt (renderR @conf model)]
+    BC.hBox [txt (renderL model), txt " ", BC.fill ' ', txt (renderR model)]
 
 -- ------------------------------------------
 -- Event Handlers
 -- ------------------------------------------
 
-type AppEventM conf itemModel newItemAttrs = EventM ResourceName (Next (BrickState conf itemModel newItemAttrs))
+type AppEventM = EventM ResourceName (Next BrickState)
 
 handleEvent ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
+  BrickState ->
   BrickEvent ResourceName Event ->
-  AppEventM conf itemModel newItemAttrs
+  AppEventM
 handleEvent s (VtyEvent e) = case (F.focusGetCurrent (s ^. focusRing), e) of
   (_, V.EvKey (V.KChar 'c') [V.MCtrl]) -> halt s
   (r, V.EvKey V.KEsc []) | r /= Just ItemsList -> backToMain s
   (Just ItemsList, _) -> handleItemsListEvent s e
-  (Just (NewItem item), _) | item `elem` getAttrsNames (attrsDescVector @conf) -> case s ^. newItem of
+  (Just (NewItem _item), _) -> case s ^. newItem of
     Just nd -> handleNewItemScreenEvent s nd e
     Nothing -> continue s
-  _ -> continue s
+  _other -> continue s
 handleEvent s _ = continue s
 
 cycleFocus ::
-  BrickState conf itemModel newItemAttrs ->
-  AppEventM conf itemModel newItemAttrs
+  BrickState ->
+  AppEventM
 cycleFocus s = continue $ s & focusRing %~ F.focusNext
 
 backToMain ::
-  BrickState conf itemModel newItemAttrs ->
-  AppEventM conf itemModel newItemAttrs
+  BrickState ->
+  AppEventM
 backToMain s = continue $ s & focusRing .~ itemsListFocus
 
 handleItemsListEvent ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
+  BrickState ->
   V.Event ->
-  AppEventM conf itemModel newItemAttrs
+  AppEventM
 handleItemsListEvent s e = case e of
   -- reset the search or exit the app
   V.EvKey V.KEsc [] -> do
     let filterText = T.strip . T.concat . E.getEditContents $ s ^. search
     if T.null filterText then halt s else continue $ setSearchField s ""
-  V.EvKey key modifier | hasKeyBinding key modifier (itemActions @conf) -> do
-    let mAct = getAction key modifier (itemActions @conf)
+  V.EvKey key modifier | hasKeyBinding key modifier itemActions -> do
+    let mAct = getAction key modifier itemActions
     let mItem = L.listSelectedElement (s ^. itemsList)
     case mItem of
       Nothing -> return ()
-      Just (_, item) -> do
+      Just (_, item) ->
         forM_ mAct $ runRIO (s ^. config) . ($ item)
     continue s
-  V.EvKey key modifier | hasKeyBinding key modifier (globalActions @conf) -> do
-    let mAct = getAction key modifier (globalActions @conf)
+  V.EvKey key modifier | hasKeyBinding key modifier globalActions -> do
+    let mAct = getAction key modifier globalActions
     forM_ mAct $ runRIO (s ^. config)
     continue s
   V.EvKey (V.KChar 'n') [V.MCtrl] -> beginNewDoc s
@@ -314,87 +349,92 @@ navKey = [V.KUp, V.KDown, V.KHome, V.KEnd, V.KPageDown, V.KPageUp]
 -- ------------------------------------------
 
 handleNewItemScreenEvent ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
-  BrickAttrStateList conf ResourceName newItemAttrs ->
+  BrickState ->
+  NewItemState ->
   V.Event ->
-  AppEventM conf itemModel newItemAttrs
-handleNewItemScreenEvent s nd ev =
+  AppEventM
+handleNewItemScreenEvent s nd@NewItemState {..} ev =
   let focus = F.focusGetCurrent (s ^. focusRing)
    in case (focus, ev) of
         (_, V.EvKey (V.KChar '\t') []) -> cycleFocus s
-        (Just (NewItem item), V.EvKey V.KEnter []) | item `elem` getAttrsNames (attrsDescVector @conf) -> do
+        (Just (NewItem _item), V.EvKey V.KEnter []) ->
           createNewItemEvent s nd
-        (Just (NewItem item), _) | item `elem` getAttrsNames (attrsDescVector @conf) -> do
-          newItem' <- handleWidgetsEvents ev item nd
-          continue $ s & newItem ?~ newItem'
+        (Just (NewItem NewItemName), _) -> do
+          newItem' <- E.handleEditorEvent ev _nameState
+          continue $ s & newItem . traverse . nameState .~ newItem'
+        (Just (NewItem NewItemTitle), _) -> do
+          newItem' <- E.handleEditorEvent ev _titleState
+          continue $ s & newItem . traverse . titleState .~ newItem'
+        (Just (NewItem NewItemTemplate), _) -> do
+          newItem' <- L.handleListEvent ev _templateState
+          continue $ s & newItem . traverse . templateState .~ newItem'
         _ -> continue s
 
 -- ------------------------------------------
 
 -- | if valid, then create a new item
 createNewItemEvent ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
-  BrickAttrStateList conf ResourceName newItemAttrs ->
-  AppEventM conf itemModel newItemAttrs
-createNewItemEvent s nd = do
+  BrickState ->
+  NewItemState ->
+  AppEventM
+createNewItemEvent s nd@NewItemState {..} = do
   let conf = s ^. config
   if validateAttrsValues nd
     then do
-      mNewItem <- applyFuncToAttrs nd (createNewItem @conf) & runRIO conf
+      let title = getEditorsValue _titleState
+          name = getEditorsValue _nameState
+          template = getListValue _templateState
+      mNewItem <- createNewDocument title name template & runRIO conf
       case mNewItem of
         Just newItm -> do
-          newItemCallback @conf newItm & runRIO conf
+          newItemCallback newItm & runRIO conf
           let newVec = Vec.cons newItm (s ^. allItems)
           backToMain $ setAllItemsList s newVec
         Nothing -> backToMain s
     else continue s
 
+initAttrsStates ::
+  RIO Config NewItemState
+initAttrsStates = do
+  ts <- getTemplateDirs
+  return $
+    NewItemState
+      { _nameState = E.editor (NewItem NewItemName) Nothing "",
+        _titleState = E.editor (NewItem NewItemTitle) Nothing "",
+        _templateState = L.list (NewItem NewItemTemplate) (Vec.fromList ts) 1
+      }
+
 beginNewDoc ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
-  AppEventM conf itemModel newItemAttrs
-beginNewDoc s =
-  if hNull $ attrsDescVector @conf
-    then continue s
-    else do
-      nd <- liftIO $ runRIO (s ^. config) $ initAttrsStates (attrsDescVector @conf)
-      let newState =
-            s
-              & focusRing .~ F.focusRing (NewItem <$> getAttrsNames (attrsDescVector @conf))
-              & newItem ?~ nd
-      handleNewItemScreenEvent newState nd (V.EvKey V.KDown [])
+  BrickState ->
+  AppEventM
+beginNewDoc s = do
+  nd <- liftIO $ runRIO (s ^. config) initAttrsStates
+  let newState =
+        s
+          & focusRing .~ F.focusRing (NewItem <$> [NewItemName, NewItemTitle, NewItemTemplate])
+          & newItem ?~ nd
+  handleNewItemScreenEvent newState nd (V.EvKey V.KDown [])
 
 -- --------------------------------------
 -- Helpers on the State
 -- --------------------------------------
 
 setAllItemsList ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
-  Vector itemModel ->
-  BrickState conf itemModel newItemAttrs
+  BrickState ->
+  Vector DocMetadata ->
+  BrickState
 setAllItemsList s l = filterResults (s & allItems .~ l)
 
 setSearchField ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
+  BrickState ->
   Text ->
-  BrickState conf itemModel newItemAttrs
+  BrickState
 setSearchField s t = s & search .~ E.editor Search Nothing t & filterResults
 
 -- | Filter the results from hoogle using the search text
 filterResults ::
-  forall conf itemModel newItemAttrs.
-  HasBrickListInterface conf itemModel newItemAttrs =>
-  BrickState conf itemModel newItemAttrs ->
-  BrickState conf itemModel newItemAttrs
+  BrickState ->
+  BrickState
 filterResults st = st & itemsList .~ L.list ItemsList results 1
   where
     allResults = st ^. allItems
@@ -403,4 +443,4 @@ filterResults st = st & itemsList .~ L.list ItemsList results 1
     results =
       if T.null filterText
         then allResults
-        else Vec.filter (matchItem @conf filterText) allResults
+        else Vec.filter (matchItem filterText) allResults

@@ -21,7 +21,6 @@ import RIO.Process
     ProcessContext,
     mkDefaultProcessContext,
   )
-import Readings.Core
 import Readings.Logger (loggerOptions)
 import Readings.Options
   ( Options (Options, optionsEnvFile),
@@ -32,6 +31,7 @@ import Readings.Settings
     HasSettings (..),
     loadSettings,
   )
+import Readings.TUI
 
 -- ---------------------------------------------
 -- Main

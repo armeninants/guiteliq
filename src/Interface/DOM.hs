@@ -21,8 +21,8 @@ import System.Directory (listDirectory)
 -- This datatype is general-purpose due to the data parameters
 -- `dirCategory` and `fileCategory`.
 data PathCategory dirMeta docMeta
-  = FPath (Maybe docMeta)
-  | DPath dirMeta
+  = FPath !(Maybe docMeta)
+  | DPath !dirMeta
   | OtherPath
 
 class DocumentOrganizationModel dom where
@@ -49,5 +49,5 @@ sourceDOM proxy dir = do
         FPath (Just docMeta) -> do
           yield docMeta
         DPath dirCategory | traversalPolicy proxy dirCategory -> sourceDOM proxy fp
-        _ -> return ()
+        _other -> return ()
       go l'
