@@ -1,3 +1,7 @@
-resolver: lts-20.1
+resolver: nightly-2022-11-25
 packages:
 - .
+extra-deps:
+- pandoc-2.19.2@sha256:080cf2f4fc8b9d389f2fd3760f59972196b8d5b0f3e9831ecf95eb0a902dbd05,40217
+- doctemplates-0.10.0.2@sha256:057c7c886708e953f48b4107155ef4a4de237c724aea106e2a0dff25ce8b269f,3179
+- gridtables-0.0.3.0@sha256:0c34cec7ff7fde5629baa6b17ba4e54fe73bc534feb48816341ad9807e284654,3055

@@ -19,6 +19,7 @@ module Readings.TUI where
 import Brick
 import qualified Brick.AttrMap as A
 import qualified Brick.Focus as F
+import Control.Lens ((%%~))
 import qualified Brick.Main as M
 import qualified Brick.Widgets.Border as B
 import qualified Brick.Widgets.Border.Style as BS
@@ -69,7 +70,6 @@ data ResourceName
 data BrickState = BrickState
   { _config :: Config,
     _focusRing :: F.FocusRing ResourceName,
-    -- _help :: Maybe (D.Dialog HelpChoice),
     _itemsList :: L.List ResourceName DocMetadata,
     _search :: E.Editor Text ResourceName,
     _allItems :: Vector DocMetadata
@@ -92,7 +92,6 @@ initBrickState = do
     BrickState
       { _config = conf,
         _focusRing = itemsListFocus,
-        -- _help = Nothing,
         _itemsList = L.list ItemsList l 1,
         _search = E.editor Search Nothing "",
         _allItems = l
@@ -112,7 +111,7 @@ brickApp =
     { M.appDraw = drawUI,
       M.appChooseCursor = M.showFirstCursor,
       M.appHandleEvent = handleEvent,
-      M.appStartEvent = pure,
+      M.appStartEvent = handleEvent (VtyEvent (EvKey KUp [])),
       M.appAttrMap = theMap
     }
 
@@ -192,28 +191,30 @@ drawDocumentItem _ model =
 -- Event Handlers
 -- ------------------------------------------
 
-type AppEventM = EventM ResourceName (Next BrickState)
+type AppEventM = EventM ResourceName BrickState ()
+
 
 handleEvent ::
-  BrickState ->
   BrickEvent ResourceName Event ->
   AppEventM
-handleEvent s (VtyEvent e) = case (F.focusGetCurrent (s ^. focusRing), e) of
-  (_, V.EvKey (V.KChar 'c') [V.MCtrl]) -> halt s
-  (r, V.EvKey V.KEsc []) | r /= Just ItemsList -> backToMain s
-  (Just ItemsList, _) -> handleItemsListEvent s e
-  _ -> continue s
-handleEvent s _ = continue s
+handleEvent (VtyEvent e) = do
+  s <- get
+  case (F.focusGetCurrent (s ^. focusRing), e) of
+    (_, V.EvKey (V.KChar 'c') [V.MCtrl]) -> halt
+    (r, V.EvKey V.KEsc []) | r /= Just ItemsList -> backToMain s
+    (Just ItemsList, _) -> handleItemsListEvent s e
+    _ -> return ()
+handleEvent _ = return ()
 
 cycleFocus ::
   BrickState ->
   AppEventM
-cycleFocus s = continue $ s & focusRing %~ F.focusNext
+cycleFocus s = put $ s & focusRing %~ F.focusNext
 
 backToMain ::
   BrickState ->
   AppEventM
-backToMain s = continue $ s & focusRing .~ itemsListFocus
+backToMain s = put $ s & focusRing .~ itemsListFocus
 
 handleItemsListEvent ::
   BrickState ->
@@ -223,7 +224,7 @@ handleItemsListEvent s e = case e of
   -- reset the search or exit the app
   V.EvKey V.KEsc [] -> do
     let filterText = T.strip . T.concat . E.getEditContents $ s ^. search
-    if T.null filterText then halt s else continue $ setSearchField s ""
+    if T.null filterText then halt else put $ setSearchField s ""
   V.EvKey key modifier | hasKeyBinding key modifier itemActions -> do
     let mAct = getAction key modifier itemActions
     let mItem = L.listSelectedElement (s ^. itemsList)
@@ -231,17 +232,19 @@ handleItemsListEvent s e = case e of
       Nothing -> return ()
       Just (_, item) ->
         forM_ mAct $ runRIO (s ^. config) . ($ item)
-    continue s
+    return ()
   V.EvKey key modifier | hasKeyBinding key modifier globalActions -> do
     let mAct = getAction key modifier globalActions
     forM_ mAct $ runRIO (s ^. config)
-    continue s
+    return ()
   V.EvKey key [] | key `elem` navKey -> do
-    newItems <- L.handleListEvent e (s ^. itemsList)
-    continue (s & itemsList .~ newItems)
+    s' <- s & itemsList %%~ \w -> nestEventM' w (L.handleListEvent e)
+    put s'
   _other -> do
-    newSearch <- E.handleEditorEvent e (s ^. search)
-    continue (s & search .~ newSearch & filterResults)
+    s' <- s & search %%~ \w -> nestEventM' w (E.handleEditorEvent (VtyEvent e))
+    put s'
+
+
 
 navKey :: [V.Key]
 navKey = [V.KUp, V.KDown, V.KHome, V.KEnd, V.KPageDown, V.KPageUp]
