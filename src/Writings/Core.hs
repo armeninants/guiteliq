@@ -18,11 +18,10 @@ import qualified Data.Text as T
 import qualified Data.Vector as Vec
 import Graphics.Vty.Input.Events
 import Interface.DOM
--- import Interface.ListInterface
 import RIO hiding (on)
 import RIO.ByteString (writeFile)
 import RIO.Directory (createDirectoryIfMissing, doesDirectoryExist, listDirectory)
-import RIO.FilePath (isValid, takeDirectory, takeFileName, (</>))
+import RIO.FilePath (takeDirectory, takeFileName, (</>))
 import RIO.List (sortBy)
 import RIO.Time (defaultTimeLocale, formatTime)
 import Shelly hiding (path, (</>))
@@ -172,25 +171,6 @@ matchItem query_ DocMetadata {..} =
 
 initAction :: RIO Conf.Config ()
 initAction = provisionTemplates
-
--- attrsDescVector :: AttrList Conf.Config WIF
--- attrsDescVector =
---   TextAttr
---     { tLabel = "title",
---       tInitial = return "",
---       tValid = not . T.null
---     }
---     :> TextAttr
---       { tLabel = "name",
---         tInitial = return "",
---         tValid = isValid . T.unpack
---       }
---     :> MultChoiceAttr
---       { mLabel = "template",
---         mInitial = getTemplateDirs,
---         mValid = isJust
---       }
---     :> NoAttr
 
 itemName :: Text
 itemName = "document"

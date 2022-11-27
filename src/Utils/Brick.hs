@@ -14,6 +14,7 @@ module Utils.Brick where
 import Data.Char (toUpper)
 import qualified Data.Text as T
 import Graphics.Vty.Input.Events hiding (Event)
+import qualified Graphics.Vty as V
 import RIO
 
 modifsToText :: [Modifier] -> Text
@@ -51,3 +52,6 @@ keyToText = \case
   KPageDown -> "PageDown"
   KBegin -> "Begin"
   KMenu -> "Menu"
+
+navKey :: [V.Key]
+navKey = [V.KUp, V.KDown, V.KHome, V.KEnd, V.KPageDown, V.KPageUp]

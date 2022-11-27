@@ -1,6 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 {-
@@ -342,10 +339,7 @@ handleItemsListEvent s e = case e of
     put s'
   _other -> do
     s' <- s & search %%~ \w -> nestEventM' w (E.handleEditorEvent (VtyEvent e))
-    put s'
-
-navKey :: [V.Key]
-navKey = [V.KUp, V.KDown, V.KHome, V.KEnd, V.KPageDown, V.KPageUp]
+    put $ filterResults s'
 
 -- ------------------------------------------
 
