@@ -228,12 +228,10 @@ handleItemsListEvent s e = case e of
     case mItem of
       Nothing -> return ()
       Just (_, item) ->
-        forM_ mAct $ runRIO (s ^. config) . ($ item)
-    return ()
+        suspendAndResume $ forM_ mAct (runRIO (s ^. config) . ($ item)) >> return s
   V.EvKey key modifier | hasKeyBinding key modifier globalActions -> do
     let mAct = getAction key modifier globalActions
-    forM_ mAct $ runRIO (s ^. config)
-    return ()
+    suspendAndResume $ forM_ mAct (runRIO (s ^. config)) >> return s
   V.EvKey key [] | key `elem` navKey -> do
     s' <- s & itemsList %%~ \w -> nestEventM' w (L.handleListEvent e)
     put s'
