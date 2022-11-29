@@ -1,5 +1,11 @@
 # Changelog for Guitéliq
 
+## 0.2.12
+
+### Writings
+
+- Added color coding for different document types.
+
 ## 0.2.0
 
 ### Writings

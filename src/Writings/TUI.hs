@@ -44,6 +44,7 @@ import Utils.Brick
 import Utils.Text
 import Writings.Core
 import Writings.Model
+import Utils.Time
 
 -- ------------------------------------------
 -- Helpers
@@ -190,10 +191,11 @@ renderAttrsWidgets NewItemState {..} fRing =
 theMap :: brickState -> A.AttrMap
 theMap _s =
   A.attrMap
-    V.defAttr
-    [ (L.listAttr, V.white `on` V.black),
-      (L.listSelectedAttr, V.black `on` V.brightBlack),
+    (V.defAttr)
+    [ (L.listAttr, fg V.brightWhite),
+      (L.listSelectedAttr, fg V.brightWhite `V.withStyle` V.bold),
       (L.listSelectedFocusedAttr, V.black `on` V.brightYellow),
+
       (E.editAttr, V.brightWhite `on` V.blue),
       (E.editFocusedAttr, V.black `on` V.yellow),
       (D.dialogAttr, V.brightWhite `on` V.blue),
@@ -279,7 +281,22 @@ drawDocumentItem ::
   Widget ResourceName
 drawDocumentItem _ model =
   BC.vLimit 1 $
-    BC.hBox [txt (renderL model), txt " ", BC.fill ' ', txt (renderR model)]
+    BC.hBox
+      [ modifyDefAttr (listAttrModif model) $ txt (model ^. docTitle), txt " "
+      , BC.fill ' '
+      , txt (formatYMD (model ^. docModificationTime))
+      ]
+
+listAttrModif :: DocMetadata -> V.Attr -> V.Attr
+listAttrModif doc attr =
+  let x = V.attrBackColor attr
+      y = x == V.SetTo V.brightYellow
+  in if y then attr else V.withForeColor attr fColor
+  where
+    fColor =
+      case (doc ^. docType) of
+        LaTeX -> V.brightWhite
+        Markdown -> V.brightCyan
 
 -- ------------------------------------------
 -- Event Handlers

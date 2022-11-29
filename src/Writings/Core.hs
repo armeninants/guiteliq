@@ -27,6 +27,8 @@ import RIO.Time (defaultTimeLocale, formatTime)
 import Shelly hiding (path, (</>))
 import Utils.LaTeX
 import Writings.Model
+import Data.Time (UTCTime)
+
 
 mapFst :: (a -> c) -> [(a, b)] -> [(c, b)]
 mapFst f xys = [(f x, y) | (x, y) <- xys]
@@ -148,12 +150,6 @@ createNewDocument title name mTemplate = do
 
 getItems :: RIO Conf.Config (Vec.Vector DocMetadata)
 getItems = view Conf.writingsDir >>= liftIO . getDocsMetaSorted
-
-renderL :: DocMetadata -> Text
-renderL DocMetadata {..} = _docTitle
-
-renderR :: DocMetadata -> Text
-renderR DocMetadata {..} = T.pack $ formatTime defaultTimeLocale "%Y-%m-%d" _docModificationTime
 
 globalActions :: [(Text, (Key, [Modifier]), RIO Conf.Config ())]
 globalActions = [("Open templates", (KChar 't', [MCtrl]), openTemplates), ("Open config", (KChar 'g', [MCtrl]), openConfig)]
